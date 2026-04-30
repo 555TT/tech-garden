@@ -329,3 +329,5 @@ git config --global --unset http.proxy
 ![img](https://i-blog.csdnimg.cn/direct/f32844c7580e477d80030d1e1c626820.png)![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)编辑
 
 红色表示文件未加入版本控制，绿色表示已加入版本控制但尚未提交，蓝色表示已提交但有修改，白色（也就是正常颜色，无色）表示已提交且无修改
+
+4. 
