@@ -1,4 +1,4 @@
-# git基本知识
+# 一、git基础概念
 
 ## 工作区域
 
@@ -18,9 +18,17 @@
 
 再强调一下，之前add了某个文件然后commit了，现在又修改了这个文件，**commit前还要再add一次！！！**你没有这个感知是因为大部分的ide比如idea、pycharm等在你commit时会自动将已修改的文件add。
 
-# 高频操作
+# 二、日常高频操作
 
-一、克隆远程仓库
+## 初始化和克隆
+
+1. 初始化仓库
+
+```bash
+git init
+```
+
+2. 克隆远程仓库
 
 用于将远程仓库的默认分支（远程仓库的默认分支不一定是master/main）克隆到本地。克隆后本地就有一个本地仓库。注意：**远程仓库不管哪个分支都是一个url**，所以你想要克隆其它分支时就要指定分支，例如，如果你要克隆develop分支，可以使用以下命令:
 
@@ -32,12 +40,6 @@ git clone -b develop <repository-url>
 
 ```bash
 git clone --branch develop <repository-url>
-```
-
-二、初始化本地仓库
-
-```bash
-git init
 ```
 
 **经典场景：本地已经有个本地仓库，但是对应的远程仓库还未创建，怎么将本地代码推到远程仓库？**
@@ -102,11 +104,11 @@ git pull --allow-unrelated-histories
 git push
 ```
 
-三、将已经修改的文件或新增的文件添加到暂存区
+## 暂存与提交
 
-git add
+1. 将已经修改的文件或新增的文件添加到暂存区：git add
 
-可以添加指定文件：
+添加指定文件：
 
 ```bash
 git add [file1] [file2] ...
@@ -117,12 +119,26 @@ git add [file1] [file2] ...
 也可以添加指定目录（会递归的添加子目录）：
 
 ```bash
-git add [dir]
+git add src/
 ```
 
 ![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)
 
-4.将已经添加到暂存区的文件提交到仓库
+添加当前目录下的所有变更
+
+```bash
+git add .
+```
+
+通配符匹配添加
+
+```bash
+git add *.js
+```
+
+
+
+2. 将已经添加到暂存区的文件提交到仓库：git commit
 
 ```bash
 git commit -m "提交信息"
@@ -130,9 +146,27 @@ git commit -m "提交信息"
 
 ![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)
 
-如果修改了一个文件，commit之前要先add！不然commit会报错。
+（如果修改了文件，commit之前要先add！不然commit会报错）
 
-5.将本地的新提交推送到远程仓库
+3. **显示当前git仓库的状态（最常用）**
+
+```bash
+git status
+```
+
+git status主要在检查工作区、暂存区、当前提交三块内容的差异。主要回答了几个问题：有没有文件被修改但还没 add、有没有文件已经 add但还没 commit、有没有新文件 、有没有删除文件 、有没有冲突、当前是落后于远程仓库还是提前于远程仓库。通过git status你都能知道，执行git add .和git commit之前你都应该执行一把git status，所以这个命令是最核心的命令。
+
+4. 查看工作区和暂存区的差异
+
+```bash
+git diff
+```
+
+也就是“改了，还没add的内容”。能清楚的看到每个改动的文件添加了哪些行、删除了哪些行。
+
+
+
+五、将本地的新提交推送到远程仓库
 
 ```bash
 git push
@@ -152,7 +186,7 @@ git push --force
 
 将远程仓库强制更新为你的本地仓库，这很危险！！！
 
-6.拉取远程仓库最新的commit
+七、拉取远程仓库最新的commit
 
 ```bash
 git pull
@@ -218,56 +252,7 @@ git rebase
 
 > git checkout <分支名称>
 
-9.打印commit历史 
 
-git log默认只会输出当前分支的的提交记录，如果要打印特定分支的log，则：
-
-```bash
-git log [分支名]
-```
-
-![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)
-
-如果要输出全部，则：
-
-```bash
-git log --all
-```
-
-![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)
-
-如果要**图形**的方式绘制提交历史的分支和合并关系，则：
-
-```bash
-git log --all --graph --decorate --oneline
-```
-
-![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)
-
-效果就会像这样：
-
-![img](https://i-blog.csdnimg.cn/direct/bb926a40e542434eaf60a60fc07a6f56.png)![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)编辑
-
-解释：红色的origin/main是远程仓库的main分支所处于的版本（此处是1e32b7f），红色的origin/feature是远程仓库的feature分支所处于的版本（此处是43d0a7d），绿色的main是本地仓库的main分支所处于的版本（此处是1e32b7f)，绿色的feature是本地仓库的feature所处于版本(43d0a7d)。蓝色的HEAD是本地仓库目前处于的分支（也就是说当前已经git checkout到了feature分支上了），红色的origin/HEAD是远程仓库目前处于的分支(此处是main分支。没有做过什么配置，默认一直在main分支）。分析这个打印结果可以看出本地仓库和远程仓库是一致的，而feature比main超前了3了commit，落后main一个commit。
-
-这个命令很常用，建议为命令设置别名：在.gitconfig文件里配置：
-
-```bash
-[alias]
-  lg =log --all --graph --decorate --oneline
-```
-
-![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)
-
-这样你输入git lg就会执行上面一大串命令。这个git log的输出内容还可以自定义美化，例如这样：
-
-```bash
-git log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit
-```
-
-![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)
-
-具体命令细节可以自行搜索。
 
 10.打印文件状态
 
@@ -312,19 +297,32 @@ git push origin <branch_name> --force
 
 一句话就是直接回退到某个提交！！
 
-# 其它
+# 必要配置
 
-1.git克隆报错Failed to connect to 127.0.0.1 port 7890 after 2034 ms: Couldn‘t connect to server
+1. 给git开梯子
 
-当无法连接github时，可以设置git的代理
+明明打开了clash等工具还是显示无法连接到GitHub
+
+```bash
+fatal: unable to access 'https://github.com/555TT/tech-garden.git/': Failed to connect to github.com port 443 after 75031 ms: Couldn't connect to server
+```
+
+那是因为git默认不会走你的代理工具，需要手动配置。
+
+解决办法：在git的全局配置文件中新增配置：
+
+```tex
+[http]
+				proxy = http://127.0.0.1:7897
+```
+
+或者执行命令写入
 
 ```bash
 git config --global http.proxy http://127.0.0.1:7890
 ```
 
 ![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)
-
-这种方式是全局配置，在~\.gitconfig里能看到设置的全局配置：
 
 取消设置代理：
 
@@ -336,7 +334,66 @@ git config --global --unset http.proxy
 
 或把配置文件中的配置信息注释掉。
 
-注意的是，打开代理后，要打开clash等工具。
+（注意的是，配置代理后，要打开clash等工具）
+
+2. 让commit历史更美观 
+
+   git log默认只会输出当前分支的的提交记录，如果要打印特定分支的log，则：
+
+   ```bash
+   git log [分支名]
+   ```
+
+   ![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)
+
+   如果要输出全部，则：
+
+   ```bash
+   git log --all
+   ```
+
+   ![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)
+
+   如果要**图形**的方式绘制提交历史的分支和合并关系，则：
+
+   ```bash
+   git log --all --graph --decorate --oneline
+   ```
+
+   ![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)
+
+   效果就会像这样：
+
+   ![img](https://i-blog.csdnimg.cn/direct/bb926a40e542434eaf60a60fc07a6f56.png)![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)编辑
+
+   解释：红色的origin/main是远程仓库的main分支所处于的版本（此处是1e32b7f），红色的origin/feature是远程仓库的feature分支所处于的版本（此处是43d0a7d），绿色的main是本地仓库的main分支所处于的版本（此处是1e32b7f)，绿色的feature是本地仓库的feature所处于版本(43d0a7d)。蓝色的HEAD是本地仓库目前处于的分支（也就是说当前已经git checkout到了feature分支上了），红色的origin/HEAD是远程仓库目前处于的分支(此处是main分支。没有做过什么配置，默认一直在main分支）。分析这个打印结果可以看出本地仓库和远程仓库是一致的，而feature比main超前了3了commit，落后main一个commit。
+
+   这个命令很常用，**为命令设置别名，在.gitconfig文件里配置：**
+
+   ```bash
+   [alias]
+     lg =log --all --graph --decorate --oneline
+   ```
+
+   ![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)
+
+   这样你输入git lg就会执行上面一大串命令。这个git log的输出内容还可以自定义美化，例如这样：
+
+   ```bash
+   git log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit
+   ```
+
+   ![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)
+
+   具体命令细节可以自行搜索。
+
+3. SSH key 和 GPG key
+
+
+
+# 其它
+
+
 
 2.为什么有的命令参数前面是一个-有的是两个--？例如git log --all和git log -a都可以？
 
