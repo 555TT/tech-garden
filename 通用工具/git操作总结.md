@@ -62,24 +62,45 @@ git remote add origin <远程仓库地址>
 
 （origin：远程仓库的默认名称）
 
-④如果远程仓库已经有了commit，比如创建仓库时自动创建readme文件，要先拉取
+④如果本地仓库也是一个新仓库，没有任何commit，那么**此时本地仓库也没有分支**。可以将本地全部文件先创建一个commit
 
 ```bash
-# 设置本地 main 跟踪远程 origin/main
+# 将本地所有的新文件/改动添加到暂存区
+git add .
+# 将所有改动创建一个commit
+git commit -m
+```
+
+创建了一个commit，此时就会有一个主分支main/master。
+
+⑤如果远程仓库已经有了commit，比如创建仓库时自动创建readme文件，可以先拉取使本地是最新的
+
+但是此时直接使用git pull拉取，git不知道要拉取远程仓库的哪个分支，要先设置本地分支关联的远程仓库的哪个分支
+
+```bash
+# 设置本地 main 跟踪远程 origin/main，此后git pull和git push时就不用指定分支了。
 git branch --set-upstream-to=origin/main main
-# 拉取
-git pull
 ```
 
-④将本地文件push到远程仓库：
+设置了关联分支后，因为本地main分支和远程main分支是不相关的分支，此时直接拉取会报错：
+
+```tex
+fatal: refusing to merge unrelated histories
+```
+
+所以这次拉取的时候要设置一下允许合并不相关的分支
 
 ```bash
-git push -u origin main
+git pull --allow-unrelated-histories
 ```
 
--u：设置默认的上游分支（upstream），便于后续操作。这会让main分支与远程的main分支关联起来，之后可以直接用 git push 或 git pull
+因为是不相关的分支拉取，可能会有冲突，此时拉取会弹出一个文本编辑，直接关闭就好了。
 
-main:远程仓库分支名称
+⑥然后将本地文件push到远程仓库：
+
+```bash
+git push
+```
 
 三、将已经修改的文件或新增的文件添加到暂存区
 
