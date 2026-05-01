@@ -56,21 +56,19 @@ git remote -v
 
 （输出空说明没有任何关联远程仓库）
 
-③为本地仓库添加远程仓库
+③为本地仓库设置远程仓库
 
 ```bash
-git remote add origin <远程仓库地址>
+git remote set-url origin <远程仓库地址>
 ```
 
 （origin：远程仓库的默认名称）
 
-④如果本地仓库也是一个新仓库，没有任何commit，那么**此时本地仓库也没有分支**。可以将本地全部文件先创建一个commit
+④如果本地仓库也是一个新仓库，没有任何commit，那么**此时本地仓库也没有分支**，没有分支就无法pull/push代码，可以将本地全部文件先创建一个commit，就会默认出现主分支
 
 ```bash
-# 将本地所有的新文件/改动添加到暂存区
-git add .
-# 将所有改动创建一个commit
-git commit -m
+git add .	# 将本地所有的新文件/改动添加到暂存区
+git commit -m	# 将所有改动创建一个commit
 ```
 
 创建了一个commit，此时就会有一个主分支main/master。
@@ -80,8 +78,7 @@ git commit -m
 但是此时直接使用git pull拉取，git不知道要拉取远程仓库的哪个分支，要先设置本地分支关联的远程仓库的哪个分支
 
 ```bash
-# 设置本地 main 跟踪远程 origin/main，此后git pull和git push时就不用指定分支了。
-git branch --set-upstream-to=origin/main main
+git branch --set-upstream-to=origin/main main	# 设置本地 main 跟踪远程 origin/main，此后git pull和git push时就不用指定分支了。
 ```
 
 设置了关联分支后，因为本地main分支和远程main分支是不相关的分支，此时直接拉取会报错：
@@ -124,7 +121,7 @@ git add src/
 
 ![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)
 
-添加当前目录下的所有变更
+添加**当前目录下**的所有变更(git add .不是将全部的修改都加入暂存区，而是当前目录下的全部文件，如果位于仓库根目录，那就是全部文件了)
 
 ```bash
 git add .
@@ -135,8 +132,6 @@ git add .
 ```bash
 git add *.js
 ```
-
-
 
 2. 将已经添加到暂存区的文件提交到仓库：git commit
 
@@ -156,130 +151,53 @@ git status
 
 git status主要在检查工作区、暂存区、当前提交三块内容的差异。主要回答了几个问题：有没有文件被修改但还没 add、有没有文件已经 add但还没 commit、有没有新文件 、有没有删除文件 、有没有冲突、当前是落后于远程仓库还是提前于远程仓库。通过git status你都能知道，执行git add .和git commit之前你都应该执行一把git status，所以这个命令是最核心的命令。
 
-4. 查看工作区和暂存区的差异
+4. git diff
+
+①查看工作区和暂存区的差异，也就是“改了，还没add的内容”。能清楚的看到每个改动的文件添加了哪些行、删除了哪些行。
 
 ```bash
-git diff
+git diff	# 查看全部改动
+git diff ./通用工具/git操作总结.md	# 查看某个文件
 ```
 
-也就是“改了，还没add的内容”。能清楚的看到每个改动的文件添加了哪些行、删除了哪些行。
-
-
-
-五、将本地的新提交推送到远程仓库
+②查看暂存区和最新一次提交(HEAD)的差异，也就是已经add还没commit的内容
 
 ```bash
-git push
+# 两个命令都行
+git diff --cached
+git diff --staged
 ```
 
-![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)
-
-push之前要先拉取最新的代码，不然也是会报错。
-
-或者强制push：
+③查看工作区和HEAD的差异，也就是查看所有未提交的修改（包括已经add和未add的）
 
 ```bash
-git push --force
+git diff HEAD
 ```
 
-![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)
-
-将远程仓库强制更新为你的本地仓库，这很危险！！！
-
-七、拉取远程仓库最新的commit
+④对比两次提交
 
 ```bash
-git pull
+git diff commit1 commit2
+# 例如
+git diff db2a623 caaa9c8
 ```
 
-![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)
+git diff还有很多高级用法，实际用到了可以再搜索。
 
- **git pull=git fetch+ git merge**
-
-git fetch
-
-git fetch命令用于从远程仓库获取最新的代码提交和分支信息，但它**不会将获取到的内容应用到你的工作目录或当前分支**，也不会改变你本地仓库的历史记录。相当于是将远程仓库的最新信息下载到你的本地仓库，你可以通过git merge或git rebase将这些更新合并到你的当前分支。
-
-7.合并分支
-
-```bash
-git merge
-
-git rebase
-```
-
-![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)
-
-**git merge/rebase到底是哪合并到哪了？**
-
-一句话，就是你当前位于哪个分支上就合并到了哪个分支上，例如:git checkout feature切换到feature分支 , git merge main 就是将main主分支的新内容合并到feature分支上。
-
-**git rebase到底是怎么合并的？**
-
-用一个例子来解释：
-
-起初git log：
-
-![img](https://i-blog.csdnimg.cn/direct/28cce0fcf169415289392867052bdb91.png)![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)编辑
-
-也就是![img](https://i-blog.csdnimg.cn/direct/d590e47d2b89412d8387bcd2fcab5285.png)![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)编辑
-
-起初只有main这一个分支。在c1这个提交之后，新建了一个feature分支，然后在main又新增了两个commit：c2、c3，在feature上新增了两个commit：c4、c5。
-
-现在把feature合并到main上。
-
-操作：git checkout main切换到main分支，然后执行git rebase feature，也就是对main进行变基。
-
-执行git rebase feature的具体过程：站在main上，先把最近公共祖先c1以后的commit也就是c2、c3删除，生成新的c2'、c3'，然后接到c5的后面。也就变成了下面这样：
-
-![img](https://i-blog.csdnimg.cn/direct/a2d5373c238146f0a27f2b225c045a70.png)![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)编辑
-
-![img](https://i-blog.csdnimg.cn/direct/f0d60f37a62945c7863545145a18a5aa.png)![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)编辑
-
-需要强调的是，c2和c3是新的c2和c3，虽然提交内容和原来的一样，但是commit id是不同的。 
-
-8.其它常用分支操作
-
-查看都是有哪些分支，当前处于的分支会被星星标记 
-
-> git branch -v
-
- 创建分支 
-
-> git branch <分支名称>
-
-切换分支
-
-> git checkout <分支名称>
-
-
-
-10.打印文件状态
-
-```bash
-git status
-```
-
-![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)
-
-能打印出哪些文件还没有add，哪些文件没有commit
-
-11.撤回某次commit
+## 撤销与回退
 
 如果你已经把 commit push 到远程仓库了，但又想撤回它。
 
 情况一：只是想撤回某个提交的更改，但保留历史记录：
 
-使用 revert，它会**创建一个新的 commit 来“反做”指定的提交**。命令：
+使用 revert，它会**创建一个新的 commit 来“反做”指定的提交**。
 
 ```bash
 git revert <commit_hash>
 git push origin <branch_name>
 ```
 
-![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)
-
-这种方式一句话就是用一个新的commit来删除掉那次commit修改的文件
+这种方式就是用一个新的commit来删除掉那次commit修改的文件
 
 情况二：想完全删除某个已经 push 的提交，比如误提交了密码/大文件/隐私信息：
 
@@ -293,9 +211,123 @@ git reset --hard <commit_hash>
 git push origin <branch_name> --force
 ```
 
-![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)
+就是直接回退到某个提交！！
 
-一句话就是直接回退到某个提交！！
+# 分支管理
+
+## 分支基础
+
+先搞清什么是分支，很多人误以为分支是代码副本，其实不是。例如：
+
+```tex
+commitA — commitB — commitC   (main)
+```
+
+main只是指向提交C，并没有复制代码。
+
+**HEAD** 是一个特殊指针，表示你当前在哪个分支或者说在哪个提交上，例如：
+
+```tex
+HEAD → main → commitC
+```
+
+也就是HEAD指向main分支，main分支指向提交C
+
+1. 创建分支
+
+```bash
+git branch feature/GGB #根据当前的HEAD分支创建新的名为feature/GGB的分支
+git branch feature/GGB dev #根据dev分支创建新的名为feature/GGB的分支
+```
+
+如果是在本地仓库创建的分支，要把这个分支推送到远程仓库，push时要指定推送的远程仓库分支。例如我要把新创建的feature/GGB分支推送到远程仓库就要执行
+
+git push --set-upstream origin feature/GGB
+
+或者先在远程创建好feature/GGB分支，将执行git pull将新分支拉取到本地，然后设置本地feature/GGB关联远程仓库的feature/GGB分支
+
+```bash
+git branch --set-upstream-to=origin/main main
+```
+
+然后再执行git push
+
+2. 切换分支
+
+```bash
+git switch 目标分支名 #新版git推荐使用git switch 而不是git checkout
+```
+
+本质就是将HEAD指向了新的分支。当切换分支时，工作区也会发生变化，也就是本地文件也切换成了另一个分支的文件。
+
+3. 删除分支
+
+```bash
+git branch -d dev #删除dev分支
+```
+
+## 分支合并
+
+```bash
+git merge
+git rebase
+```
+
+**git merge/rebase到底是哪合并到哪了？**
+
+一句话，就是你当前位于哪个分支上就合并到了哪个分支上，例如:git switch feature切换到feature分支 , git merge main 就是将main主分支的新内容合并到feature分支上。
+
+**git rebase到底是怎么合并的？**
+
+用一个例子来解释：
+
+起初git log：
+
+![img](https://i-blog.csdnimg.cn/direct/28cce0fcf169415289392867052bdb91.png)![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)编辑
+
+也就是![img](https://i-blog.csdnimg.cn/direct/d590e47d2b89412d8387bcd2fcab5285.png)![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)
+
+起初只有main这一个分支。在c1这个提交之后，新建了一个feature分支，然后在main又新增了两个commit：c2、c3，在feature上新增了两个commit：c4、c5。
+
+现在把feature合并到main上。
+
+操作：git checkout main切换到main分支，然后执行git rebase feature，也就是对main进行变基。
+
+执行git rebase feature的具体过程：站在main上，先把最近公共祖先c1以后的commit也就是c2、c3删除，生成新的c2'、c3'，然后接到c5的后面。也就变成了下面这样：
+
+![img](https://i-blog.csdnimg.cn/direct/a2d5373c238146f0a27f2b225c045a70.png)![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)编辑
+
+![img](https://i-blog.csdnimg.cn/direct/f0d60f37a62945c7863545145a18a5aa.png)![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)
+
+需要强调的是，c2和c3是新的c2和c3，虽然提交内容和原来的一样，但是commit id是不同的。 
+
+# 远程协作
+
+## 拉取/推送
+
+```bash 
+git push # 将本地的新提交推送到远程仓库
+```
+
+**push之前要先拉取最新的代码**，养成习惯！
+
+或者强制push：
+
+```bash
+git push --force #将远程仓库强制更新为你的本地仓库，这很危险！！！
+```
+
+```bash
+git pull # 拉取远程仓库最新的commit
+```
+
+ **git pull=git fetch+ git merge**
+
+git fetch
+
+git fetch命令用于从远程仓库获取最新的代码提交和分支信息，但它**不会将获取到的内容应用到你的工作目录或当前分支**，也不会改变你本地仓库的历史记录。相当于是将远程仓库的最新信息下载到你的本地仓库，你可以通过git merge或git rebase将这些更新合并到你的当前分支。
+
+
 
 # 必要配置
 
@@ -389,7 +421,13 @@ git config --global --unset http.proxy
 
 3. SSH key 和 GPG key
 
+终端执行
 
+```bash
+ssh-keygen -t rsa -b 4096 -C "你的邮箱"
+```
+
+然后将公钥保存到github的ssh key
 
 # 其它
 
@@ -407,5 +445,3 @@ git config --global --unset http.proxy
 ![img](https://i-blog.csdnimg.cn/direct/f32844c7580e477d80030d1e1c626820.png)![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)编辑
 
 红色表示文件未加入版本控制，绿色表示已加入版本控制但尚未提交，蓝色表示已提交但有修改，白色（也就是正常颜色，无色）表示已提交且无修改
-
-4. 
