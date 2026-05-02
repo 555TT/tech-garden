@@ -419,7 +419,7 @@ git config --global --unset http.proxy
 
    具体命令细节可以自行搜索。
 
-3. SSH key 和 GPG key
+3. 通过SSH key认证方式操作远程仓库
 
 终端执行
 
