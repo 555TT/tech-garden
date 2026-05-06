@@ -1,4 +1,4 @@
-# AI Coding 时代
+# AI-Coding 时代
 
 ## 栏目定位
 

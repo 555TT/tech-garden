@@ -11,7 +11,7 @@
 | 子领域             | 示例主题                                                     |
 | ------------------ | ------------------------------------------------------------ |
 | 基础设施与操作系统 | Linux 内核调优、Shell 脚本技巧、系统故障排查（磁盘满、CPU 高、OOM） |
-| 中间件运维与原理   | Kafka/RabbitMQ 集群部署与监控、MySQL/Redis 主从与备份、Nginx 反向代理配置 |
+| 中间件运维与原理   | Kafka/RabbitMQ 集群部署与监控、MySQL/Redis 主从与备份、Nginx 反向代理配置、TCP原理 |
 | 容器与编排         | Dockerfile 最佳实践、多阶段构建、Kubernetes 核心对象与管理、Helm Chart 编写 |
 | CI/CD 与交付流水线 | GitHub Actions/GitLab CI 实战、多环境管理、灰度发布与蓝绿部署策略 |
 | 可观测性与排障     | 日志系统（ELK/Loki)、指标监控（Prometheus+Grafana)、链路追踪、线上排障复盘 |
