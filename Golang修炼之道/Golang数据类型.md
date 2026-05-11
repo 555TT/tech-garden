@@ -34,7 +34,7 @@ var s []int
 fmt.Println("[]int:", unsafe.Sizeof(s))	// 24
 ```
 
-unsafe.SizeOf() 得到的是变量本身占用的字节大小，而不是实际数据的字节大小
+unsafe.SizeOf() 得到的是变量本身占用的字节大小，而不是指向的实际数据的字节大小
 
 ```go
 var str = "柒水浩"
@@ -44,7 +44,7 @@ fmt.Println(len(str))	// 9，UniCode编码中，一个汉字占用三个字节
 
 ## 数据类型分类
 
-### 按基本/复合来分
+### 按基本类型/复合类型来分
 
 1. 基本类型
 
@@ -69,15 +69,17 @@ fmt.Println(len(str))	// 9，UniCode编码中，一个汉字占用三个字节
 
 切片、map、指针、接口、函数、chan
 
+golang中，参数传递全是值传递
+
 ### 按照是否可比较分类
 
 在 Go 中，是否可比较的意思是否可以用`==`来运算。
 
-1. 可比较：基本类型、指针、数组（元素可比较）、结构体（必须全部元素可比较）、chan、接口
+1. 可比较：基本类型、指针、数组（元素可比较的情况下）、结构体（必须全部元素可比较）、chan、接口
 
 基本类型、数组、结构体在用`==`运算时比较的是具体的值是否相等。
 
-指针、`chan`可比较的前提是数据是同类型的指针/同类型的 `chan`，且`==`在运算时比较的是地址是否相同，即是否是一个实例。
+指针、`chan`可比较的前提是两变量是同类型的指针/同类型的 `chan`，且`==`在运算时比较的是地址是否相同，即是否是一个实例。
 
 ```go
 func1 := func() {
@@ -86,10 +88,10 @@ func1 := func() {
 s1 := "111"
 ptr1 := &func1
 ptr2 := &s1
-fmt.Println(ptr1 == ptr2)	// 编译错误,不可比较，*func() 和 *string 类型不匹配
+fmt.Println(ptr1 == ptr2)	// 编译错误,不可比较，是不同类型的指针，*func() 和 *string 类型不匹配
 ch1 := make(chan int)
 ch2 := make(chan string)
-fmt.Println(ch1 == ch2)	//	编译错误，不可比较，chan int 和 chan string不匹配
+fmt.Println(ch1 == ch2)	//	编译错误，不可比较，是不同类型的chan，chan int 和 chan string不匹配
 ch3 := make(chan byte)
 ch4 := make(chan byte)
 ch5 := ch3
@@ -97,7 +99,7 @@ fmt.Println(ch3 == ch4)	//	false，可比较，比较的是内存地址是否相
 fmt.Println(ch3 == ch5)	//	true，可比较
 ```
 
-接口由两部分 type 和 value 两部分组成，两个接口类型的变量可以比较的前提是 type 是可比较
+接口由两部分 type 和 value 两部分组成，两个接口类型的变量可以比较的前提是 type 是可比较的
 
 ```go
 var a interface{} = []int{1}
@@ -113,7 +115,7 @@ var b interface{} = [1]int{1}
 fmt.Println(a == b)	// true
 ```
 
-2. 不可比较：函数、切片、map（函数、切片、map 中均未定义`==`这个运算符）
+2. 不可比较：函数、切片、map（函数、切片、map 中都压根未定义`==`这个运算符）
 
 Go 规范明确规定：map 的 key 类型必须支持 `==` 比较操作。可以这么说，**可比较的数据类型一定可以作为 map 的 key，可以作为 map 的 key 的数据类型一定可比较**。
 
