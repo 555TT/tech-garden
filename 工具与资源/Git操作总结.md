@@ -3,9 +3,10 @@
 ## 工作区域
 
 - 远程仓库**：** 就是我们托管在github或者其他代码托管平台上的仓库。
-- 本地仓库**：** 就是在我们本地通过git init或git clone命令建的仓库。
+- 本地仓库**：** 就是在我们本地通过`git init`或`git clone`命令建的仓库。
 - **工作区：** 就是我们写代码、编辑文件的地方。
 - **暂存区：** 当工作区的内容写好了之后，就会通过add命令，将工作区的内容放到暂存区，等待commit命令提交到本地仓库中。
+- **版本库**：执行 `git commit` 后，提交历史被永久保存的地方。
 
 ## 文件状态
 
@@ -16,7 +17,11 @@
 - 已暂存（staged）**：** 表示把已修改的文件已add到暂存区。
 - 已提交（commit）**：** 表示文件已经commit到本地仓库保存起来了。
 
-再强调一下，之前add了某个文件然后commit了，现在又修改了这个文件，**commit前还要再add一次！！！**你没有这个感知是因为大部分的ide比如idea、pycharm等在你commit时会自动将已修改的文件add。
+再强调一下，之前add了某个文件然后commit了，现在又修改了这个文件，**commit前还要再add一次！！！**你没有这个感知是因为大部分的ide比如idea、pycharm等都是执行的`git commit file1 file2 -m "提交这些文件"`，指定文件的`git commit`命令会自动执行git add然后commit。但这种方法只对“已修改文件”有效，新文件（untracked）不会被提交 。
+
+我认为，这也是为什么jetbrains家族的ide都会把文件分为“更改”和“未进行版本管理的文件”。
+
+<img src="/Users/zyb/Desktop/截屏2026-06-03 11.48.59.png" alt="截屏2026-06-03 11.48.59" style="zoom:50%;" />
 
 # 二、日常高频操作
 
@@ -59,7 +64,7 @@ git remote -v
 ③为本地仓库设置远程仓库
 
 ```bash
-git remote set-url origin <远程仓库地址>
+git remote add origin <远程仓库地址>
 ```
 
 （origin：远程仓库的默认名称）
@@ -141,7 +146,13 @@ git commit -m "提交信息"
 
 ![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)
 
-（如果修改了文件，commit之前要先add！不然commit会报错）
+（如果修改了文件，commit之前要先add！）
+
+**经典场景：一次修改了很多文件，但其中某些文件不想提交，怎么提交指定某些文件？**
+
+推荐的做法：先对指定文件执行git add ，然后再git commit "..."
+
+另一种ide中的做法，直接对指定文件执行git commit file1 file2 -m "..."，但这种方式无法提交上新增的还没被git追踪的文件。
 
 3. **显示当前git仓库的状态（最常用）**
 
@@ -199,6 +210,7 @@ git diff master --stat # 显示每个文件改了多少行，末尾有总计
 git diff master -- service/exercise_note/question.go # 只看某个文件的差异
 git diff master -- service/ # 只查看某个目录下所有文件
 git diff master --ignore-all-space # 忽略空格、空行等空白符的变化，只看实质性改动
+# 这些参数都能组合着用，比如git diff HEAD --stat --ignore-all-space service/exercise_note/question.go
 ```
 
 组合拳：先用`--stat`看全局，再挑感兴趣的文件用`git diff master -- \[文件路径\]` 细看。
@@ -320,7 +332,7 @@ git rebase
 
 ![img](https://i-blog.csdnimg.cn/direct/f0d60f37a62945c7863545145a18a5aa.png)![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)
 
-需要强调的是，c2和c3是新的c2和c3，虽然提交内容和原来的一样，但是commit id是不同的。 
+需要强调的是，c2和c3是新的c2和c3，虽然提交内容和原来的一样，但是commit hash值是不同的。 
 
 # 四、远程协作
 
