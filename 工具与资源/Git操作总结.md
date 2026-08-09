@@ -21,7 +21,7 @@
 
 我认为，这也是为什么jetbrains家族的ide都会把文件分为“更改”和“未进行版本管理的文件”。
 
-<img src="/Users/zyb/Desktop/截屏2026-06-03 11.48.59.png" alt="截屏2026-06-03 11.48.59" style="zoom:50%;" />
+<img src="../assets/images/missing/截屏2026-06-03 11.48.59.png" alt="截屏2026-06-03 11.48.59" style="zoom:50%;" />
 
 # 二、日常高频操作
 

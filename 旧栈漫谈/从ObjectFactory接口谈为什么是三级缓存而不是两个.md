@@ -6,7 +6,7 @@
 
 众所众知，spring解决循环依赖用的三级缓存，也就是三个HashMap，通过提前缓存半成品exposedObject对象，来解决A依赖B，B又依赖了A的问题。
 
-![](C:\Users\DELL\Desktop\image-已去除(lightpdf.cn).png)
+![](../assets/images/missing/image-已去除(lightpdf.cn).png)
 
 再次说明一下，解决循环依赖用的是提前暴露出来半成品对象的方式解决的，那么理论上两个缓存也可以解决，也就是二级缓存也可以解决：一个缓存用来存储成品对象，另一个用来存储提前暴露的半成品对象。那spring为什么要用三个缓存来解决循环依赖呢？
 
@@ -14,21 +14,21 @@
 
 先看看三个缓存的真面目，在DefaultListableBeanFactory类的基类之一DefaultSingletonBeanRegistry类中：
 
-![image-20250821214641768](C:\Users\DELL\AppData\Roaming\Typora\typora-user-images\image-20250821214641768.png)
+![image-20250821214641768](../assets/images/image-20250821214641768.png)
 
 singletonObjects就是我们说的一级缓存，earlySingletonObjects就是二级缓存，singletonFactories就是三级缓存。值得注意的是三级缓存中的value是ObjectFactory，ObjectFactory是一个接口。即三级缓存中存储的是ObjectFacotry接口的实现类。三级缓存是什么时候放进去的？
 
-![image-20250821215037246](C:\Users\DELL\AppData\Roaming\Typora\typora-user-images\image-20250821215037246.png)
+![image-20250821215037246](../assets/images/image-20250821215037246.png)
 
 就在上图中的断点处，该处就是在bean生命周期createBeanInstance方法实例化创建bean之后。即三级缓存是在实例化完成之后populateBean和initializeBean之前放进去的。放进去的是什么？
 
 点进addSingletonFactory方法中：
 
-![image-20250821215327777](C:\Users\DELL\AppData\Roaming\Typora\typora-user-images\image-20250821215327777.png)
+![image-20250821215327777](../assets/images/image-20250821215327777.png)
 
 发现放进去的就是ObjectFactory接口，也就是外面的() -> getEarlyBeanReference(beanName, mbd, bean)这样的lambda表达式，该lambda表达式中又调用了getEarlyBeanReference方法。lambda表达式是匿名类的简化写法，所以这里放进去的就是ObjectFactory接口的一个实现类的对象，并且该实现类的对象的getObject方法中调用了getEarlyBeanReference方法，
 
-![image-20250821220414838](C:\Users\DELL\AppData\Roaming\Typora\typora-user-images\image-20250821220414838.png)
+![image-20250821220414838](../assets/images/image-20250821220414838.png)
 
 getEarlyBeanReference方法的第三个参数暂存了当前刚实例化完成但未填充和初始化完成的半成品对象。
 
@@ -40,7 +40,7 @@ getEarlyBeanReference方法的第三个参数暂存了当前刚实例化完成�
 
 spring中创建bean的代理是通过AnnotationAwareAspectJAutoProxyCreator这个bean后置处理器的postProcessAfterInitialization方法中实现的：
 
-![image-20250821224036359](C:\Users\DELL\AppData\Roaming\Typora\typora-user-images\image-20250821224036359.png)
+![image-20250821224036359](../assets/images/image-20250821224036359.png)
 
 （具体在AnnotationAwareAspectJAutoProxyCreator的基类AbstractAutoProxyCreator中）
 

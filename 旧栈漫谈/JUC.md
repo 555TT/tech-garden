@@ -12,7 +12,7 @@
 
    join方法是加了synchronized修饰的，锁的是这个thread对象
 
-   ![image-20250419120248249](C:\Users\DELL\AppData\Roaming\Typora\typora-user-images\image-20250419120248249.png)
+   ![image-20250419120248249](../assets/images/image-20250419120248249.png)
 
 5. join会使当前线程阻塞到这行代码。细节：join的作用是让当前线程等待另一个线程执行结束，达到同步的效果。但join方法可以设置等待时间，如果在给定的等待时间，另一个线程还没有执行完，则主线程会直接继续执行，不再等待另一个线程；**如果在给定的时间提前结束了，则主线程也会继续执行，而不是非要等到给定的时间。**
 
@@ -209,7 +209,7 @@ public class DoubleCheckSingletion {
 
 为什么？
 
-![image-20250418215800057](C:\Users\DELL\AppData\Roaming\Typora\typora-user-images\image-20250418215800057.png)
+![image-20250418215800057](../assets/images/image-20250418215800057.png)
 
 我们假设t1、t2两个线程同时开始调用getInstance方法获取单例对象：step1：t1执行到⑤，开始实例化对象；step2：t2执行到②，判断不为null，然后执行⑨，返回doubleCheckSingletion；step3：t2拿到doubleCheckSingletion，开始后续调用，如doubleCheckSingletion.call()。
 
@@ -370,8 +370,8 @@ public void add(long x) {
 }
 ```
 
-![image-20250516213624366](C:\Users\DELL\AppData\Roaming\Typora\typora-user-images\image-20250516213624366.png)
+![image-20250516213624366](../assets/images/image-20250516213624366.png)
 
 getProbe()&m和HashMap中的(n-1)&hash类型，都是通过hash对数组长度取模运算
 
-![image-20250516213644338](C:\Users\DELL\AppData\Roaming\Typora\typora-user-images\image-20250516213644338.png)
+![image-20250516213644338](../assets/images/image-20250516213644338.png)

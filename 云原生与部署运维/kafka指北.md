@@ -24,15 +24,15 @@ zookeeper前置知识：
 
 第一个broker启动流程：1.注册broker节点，在/broker/ids下创建一个节点。2.监听/controller节点。3.发现还没人创建/controller，自己注册创建/controller节点，成为controller。4.监听/broker/ids下的节点，用来感知到后续broker的加入和退出。
 
-![image-20250313105717069](C:\Users\DELL\AppData\Roaming\Typora\typora-user-images\image-20250313105717069.png)
+![image-20250313105717069](../assets/images/image-20250313105717069.png)
 
 第二个broker启动：1.注册broker节点。2.监听/controller节点3.注册/controller，但不成功。4.由于controller节点监听了/brokers/ids，所以这时zookeeper会通知controller集群的变化。5.controller连接其它broker，发送集群相关的元信息
 
-![image-20250313110602682](C:\Users\DELL\AppData\Roaming\Typora\typora-user-images\image-20250313110602682.png)
+![image-20250313110602682](../assets/images/image-20250313110602682.png)
 
 controller节点故障被删除的情况：1.zookeeper通知其它broker节点controller节点的删除。2.其它broker监听注册controller节点，但只有一个节点能注册成功。3.controller节点在/brokers/ids上增加监听器。4.controller连接其它所有broker，发送集群相关元信息。
 
-![image-20250313111012967](C:\Users\DELL\AppData\Roaming\Typora\typora-user-images\image-20250313111012967.png)
+![image-20250313111012967](../assets/images/image-20250313111012967.png)
 
 # 主题创建
 
@@ -52,7 +52,7 @@ kafka默认开启了主题自动创建，当生产者向一个不存在的主题
 
 未指定机架信息：
 
-![image-20250315172932820](C:\Users\DELL\AppData\Roaming\Typora\typora-user-images\image-20250315172932820.png)
+![image-20250315172932820](../assets/images/image-20250315172932820.png)
 
 用一个例子代入：
 
@@ -79,7 +79,7 @@ kafka默认开启了主题自动创建，当生产者向一个不存在的主题
 
 副本分布最理想的情况是各个leader和follower副本均匀的分布在各个broker节点上，这样IO读写可以均衡的散落到各个服务器上，避免单点读写瓶颈。但kafka是一个一个创建主题的，人家又不知道你以后会创建什么样的主题，它没办法去站在上帝视角去均匀的分配副本，所以默认的分配策略分配的并不是最理想的，我们可以自己指定副本分布在哪个分区上
 
-![image-20250315172435953](C:\Users\DELL\AppData\Roaming\Typora\typora-user-images\image-20250315172435953.png)
+![image-20250315172435953](../assets/images/image-20250315172435953.png)
 
 3号节点指的是server.properties配置文件中broker.id为3的节点
 
@@ -93,11 +93,11 @@ ISR（In-Sync Replicas）副本同步列表。一个分区有leader和follower�
 
 具体来说，是由这个参数决定的replica.lag.time.max.ms
 
-![image-20250315192804728](C:\Users\DELL\AppData\Roaming\Typora\typora-user-images\image-20250315192804728.png)
+![image-20250315192804728](../assets/images/image-20250315192804728.png)
 
 还有一个影响参数是replica.lag.max.messages，但在新版kafka中已经被删除了
 
-![image-20250315193002642](C:\Users\DELL\AppData\Roaming\Typora\typora-user-images\image-20250315193002642.png)
+![image-20250315193002642](../assets/images/image-20250315193002642.png)
 
 ## leader副本选举机制
 
@@ -123,7 +123,7 @@ LEO是副本上的概念，不要搞混了
 
 ## 流程
 
-![image-20250318122536896](C:\Users\DELL\AppData\Roaming\Typora\typora-user-images\image-20250318122536896.png)
+![image-20250318122536896](../assets/images/image-20250318122536896.png)
 
 **主线程**：准备数据->拦截器->得到集群元数据->序列化器->分区器->数据校验->将数据追加到数据收集器（RecordAccumulator）中。
 
@@ -133,7 +133,7 @@ LEO是副本上的概念，不要搞混了
 
 **sender发送线程**：从RecordAccumulator取一批次数据，**按broker分组**，每个请求对应一个Broker，包含多个分区的消息批次->构建成ProduceRequest->通过`NetworkClient`发送请求到broker，与broker网络IO通信（内部使用Java的NIO）->回调函数处理响应
 
-![image-20250318125535214](C:\Users\DELL\AppData\Roaming\Typora\typora-user-images\image-20250318125535214.png)
+![image-20250318125535214](../assets/images/image-20250318125535214.png)
 
 所以真正将数据发送到kafka的是sender线程，并不是我们的用户主线程
 
@@ -185,17 +185,17 @@ RecordMetadata metadata = future.get(); // 阻塞直到收到 Broker 响应
 
 计算分区的逻辑大致如图：
 
-![image-20250314144500003](C:\Users\DELL\AppData\Roaming\Typora\typora-user-images\image-20250314144500003.png)
+![image-20250314144500003](../assets/images/image-20250314144500003.png)
 
 从图中代码可以看出四个分区策略的优先级为：是否指定分区>是否指定分区器>是否定义了消息的key>随机
 
 也就是，当指定分区时发送到指定的分区（指定partition参数）
 
-![image-20250314120316545](C:\Users\DELL\AppData\Roaming\Typora\typora-user-images\image-20250314120316545.png)
+![image-20250314120316545](../assets/images/image-20250314120316545.png)
 
 没指定具体分区，也没指定分区器，但消息有key时根据key来计算发送的分区，对应DefaultPartitioner分区器类
 
-![image-20250314120836175](C:\Users\DELL\AppData\Roaming\Typora\typora-user-images\image-20250314120836175.png)
+![image-20250314120836175](../assets/images/image-20250314120836175.png)
 
 
 
@@ -203,11 +203,11 @@ DefaultPartitioner的分区逻辑大概是：计算key的序列化字节数组�
 
 未具体指定分区，消息也没有key，也没有指定生产者的分区器时，会用一个随机数对可用分区取模，对应的是UniformStickyPartitioner分区器类
 
-![image-20250314145149770](C:\Users\DELL\AppData\Roaming\Typora\typora-user-images\image-20250314145149770.png)
+![image-20250314145149770](../assets/images/image-20250314145149770.png)
 
 除了DefaultPartitioner和UniformStickyPartitioner，还有一个RoundRobinPartitioner分区器。
 
-![image-20250314153059094](C:\Users\DELL\AppData\Roaming\Typora\typora-user-images\image-20250314153059094.png)
+![image-20250314153059094](../assets/images/image-20250314153059094.png)
 
 （依赖下载了两个版本，所以会有两份，不用关心这个）
 
@@ -266,7 +266,7 @@ Kafka为了保证消息发送的Exactly-once语义，增加了几个概念：
 
 **开始幂等性需要生产者做以下配置**：
 
-![image-20250307163223648](C:\Users\DELL\AppData\Roaming\Typora\typora-user-images\image-20250307163223648.png)
+![image-20250307163223648](../assets/images/image-20250307163223648.png)
 
 翻译过来也就是
 
@@ -366,31 +366,31 @@ public class ProducerTransactionTest {
 
 一条消息的内容有这些（ProducerRecord）
 
-![image-20250318121634259](C:\Users\DELL\AppData\Roaming\Typora\typora-user-images\image-20250318121634259.png)
+![image-20250318121634259](../assets/images/image-20250318121634259.png)
 
 ## log、index、timeindex文件
 
-kafka的topic的每个分区都对应一个物理文件夹，比如创建一个名为test的topic，分区数量为3，副本数量为1。则在物理磁盘上像这样：![image-20250301170237368](C:\Users\DELL\AppData\Roaming\Typora\typora-user-images\image-20250301170237368.png)
+kafka的topic的每个分区都对应一个物理文件夹，比如创建一个名为test的topic，分区数量为3，副本数量为1。则在物理磁盘上像这样：![image-20250301170237368](../assets/images/image-20250301170237368.png)
 
 从这也能看出，kafka中的topic只是逻辑上的概念，分区才是真正的物理存储结构。
 
-每个文件夹里一般有这些内容：![image-20250301170309297](C:\Users\DELL\AppData\Roaming\Typora\typora-user-images\image-20250301170309297.png)
+每个文件夹里一般有这些内容：![image-20250301170309297](../assets/images/image-20250301170309297.png)
 
 log文件是消息存储的文件；index文件是索引文件，作用是记录消息的偏移量和消息在log文件中的具体位置的关联，这样就能根据index文件和消息偏移量在log文件中找到消息了；timeindex是时间索引文件，作用是根据时间戳去找log文件中找消息。
 
 消息就存储在log文件中。但是消息发送后并不会立即写到文件里，而是由一个logManger组件周期性的将消息从内存写到磁盘上。具体什么时候刷盘有配置文件决定：
 
-![image-20250301171308325](C:\Users\DELL\AppData\Roaming\Typora\typora-user-images\image-20250301171308325.png)
+![image-20250301171308325](../assets/images/image-20250301171308325.png)
 
 kafka官方认为消息的可靠性应该主要靠分区副本来保证，而不是立即将消息刷写到磁盘上。
 
 并且log文件会进行拆分，由多个文件段组成，并不是将所有消息都存储到一个log文件中。具体拆分条件由配置决定，比如按照文件大小拆分：
 
-![image-20250301171444945](C:\Users\DELL\AppData\Roaming\Typora\typora-user-images\image-20250301171444945.png)
+![image-20250301171444945](../assets/images/image-20250301171444945.png)
 
 多个文件段就像这样：
 
-![image-20250301171635919](C:\Users\DELL\AppData\Roaming\Typora\typora-user-images\image-20250301171635919.png)
+![image-20250301171635919](../assets/images/image-20250301171635919.png)
 
 三个文件是一组，叫一个文件段。并且文件名数字（20位）就是这组文件的起始偏移量，比如上图第一组的文件的起始偏移量是0，第二组的是16。从这里也能知道第一组文件存储了16条消息（0~15）
 
@@ -402,7 +402,7 @@ kafka-dump-log.sh --files /mysoftware/kafka_2.13-3.8.0/data/kafka/test-tran-0/00
 
 index文件内容一般像这样：
 
-![image-20250301175540909](C:\Users\DELL\AppData\Roaming\Typora\typora-user-images\image-20250301175540909.png)
+![image-20250301175540909](../assets/images/image-20250301175540909.png)
 
 log文件中又有每个消息的postition，所以就能根据index文件和偏移量在log文件中找到某条消息。
 
@@ -410,7 +410,7 @@ log文件中又有每个消息的postition，所以就能根据index文件和偏
 
 timeindex文件和index类似，它放的是时间戳和位置的对应信息
 
-![image-20250301180652357](C:\Users\DELL\AppData\Roaming\Typora\typora-user-images\image-20250301180652357.png)
+![image-20250301180652357](../assets/images/image-20250301180652357.png)
 
 ## 刷盘机制
 
@@ -443,13 +443,13 @@ log.flush.interval.ms=1
 
 HW：(High Watermark)，即高水位值，它代表一个偏移量信息。
 
-![image-20250301181618045](C:\Users\DELL\AppData\Roaming\Typora\typora-user-images\image-20250301181618045.png)
+![image-20250301181618045](../assets/images/image-20250301181618045.png)
 
 多个follower副本在从leader副本同步数据时，各个follower同步的数据不一定一致。在leader挂了时，会从ISR列表（ISR列表是有顺序的）中找到下一个follower（上图中就是follower-1）成为leader，但是follower-1只有2条数据，原leader有4条数据呢，这怎么办？
 
 kafka有水位线的概念，消费者能消费到哪个数据取决于消息数最少的（木桶效应）
 
-![image-20250301181949373](C:\Users\DELL\AppData\Roaming\Typora\typora-user-images\image-20250301181949373.png)
+![image-20250301181949373](../assets/images/image-20250301181949373.png)
 
 水位线以上都是不可见的。水位线也会随着follower同步数据而不断上涨
 
@@ -461,7 +461,7 @@ kafka有水位线的概念，消费者能消费到哪个数据取决于消息数
 
 偏移量默认是自动提交的，提交时间间隔默认是5秒。
 
-![image-20250307193140591](C:\Users\DELL\AppData\Roaming\Typora\typora-user-images\image-20250307193140591.png)
+![image-20250307193140591](../assets/images/image-20250307193140591.png)
 
 自动提交有可能导致重复消费。设置为手动提交。手动提交有同步和异步提交consumer.commitAsync();consumer.commitSync();
 
@@ -475,15 +475,15 @@ kafka并没有提供消费者事务。如果数据处理完毕，提交偏移量
 
 这里要说的是和生产者事务有关的消费者的事务隔离级别。
 
-![image-20250307195833824](C:\Users\DELL\AppData\Roaming\Typora\typora-user-images\image-20250307195833824.png)
+![image-20250307195833824](../assets/images/image-20250307195833824.png)
 
 只有两个取值read_committed和read_uncommitted。读已提交表示只有生产者事务正确提交后消费者才能看到数据，而读未提交，默认是读未提交！！！
 
 需要强调的是，**一旦正常调用了commitTransaction，消息就能被消费者消费了（即使是读未提交），再调用abortTransaction也没用了**（会报错），例如下面这样
 
-![image-20250308191317464](C:\Users\DELL\AppData\Roaming\Typora\typora-user-images\image-20250308191317464.png)
+![image-20250308191317464](../assets/images/image-20250308191317464.png)
 
-![image-20250308191536620](C:\Users\DELL\AppData\Roaming\Typora\typora-user-images\image-20250308191536620.png)
+![image-20250308191536620](../assets/images/image-20250308191536620.png)
 
 ## 调度（协调）器Coordinator
 
@@ -507,11 +507,11 @@ RoundRobinAssignor（轮询分配策略）
 
 每个消费者组中的消费者都会含有一个自动生产的UUID作为memberid。将每个消费者按照memberid进行排序，所有member消费的主题分区根据主题名称进行排序。
 
-![image-20250313113901948](C:\Users\DELL\AppData\Roaming\Typora\typora-user-images\image-20250313113901948.png)
+![image-20250313113901948](../assets/images/image-20250313113901948.png)
 
 将主题分区轮询分配给对应的订阅用户，注意未订阅当前轮询主题的消费者会跳过。
 
-![image-20250313113921808](C:\Users\DELL\AppData\Roaming\Typora\typora-user-images\image-20250313113921808.png)
+![image-20250313113921808](../assets/images/image-20250313113921808.png)
 
 轮询分配分配的不是很均衡。
 
@@ -529,7 +529,7 @@ RangeAssignor（范围分配策略）
 
 因为是一个主题一个主题算的，Range分配策略针对单个Topic的情况下显得比较均衡，但是假如Topic多的话, member排序靠前的可能会比member排序靠后的负载多很多。是不是也不够理想。例如：
 
-![image-20250313114840061](C:\Users\DELL\AppData\Roaming\Typora\typora-user-images\image-20250313114840061.png)
+![image-20250313114840061](../assets/images/image-20250313114840061.png)
 
 左边的分配方式解释：因为是一个主题一个主题算的，所以主题一中，紫色消费者分配三个分区，主题二中，紫色消费者也是分配三个主题。这样紫色就消费6个分区，黄色才消费4个分区。
 
@@ -539,9 +539,9 @@ RangeAssignor（范围分配策略）
 
 在第一次分配后，每个组成员都保留分配给自己的分区信息。当发生重平衡时，在进行分区再分配时（一般情况下，消费者退出45s后，才会进行再分配，因为需要考虑可能又恢复的情况），尽可能保证消费者原有的分区不变，重新对加入或退出消费者的分区进行分配。
 
-![image-20250313120404582](C:\Users\DELL\AppData\Roaming\Typora\typora-user-images\image-20250313120404582.png)
+![image-20250313120404582](../assets/images/image-20250313120404582.png)
 
-![image-20250313120412981](C:\Users\DELL\AppData\Roaming\Typora\typora-user-images\image-20250313120412981.png)
+![image-20250313120412981](../assets/images/image-20250313120412981.png)
 
 从图中可以看出，粘性分区分配策略分配的会更加均匀和高效一些。
 
@@ -627,11 +627,11 @@ Kafka定期自动删除过期位移的条件就是，组要处于Empty状态。 
 
 零拷贝
 
-![image-20250308191824275](C:\Users\DELL\AppData\Roaming\Typora\typora-user-images\image-20250308191824275.png)
+![image-20250308191824275](../assets/images/image-20250308191824275.png)
 
 **怎么保证顺序消费**
 
-![image-20250315121456712](C:\Users\DELL\AppData\Roaming\Typora\typora-user-images\image-20250315121456712.png)
+![image-20250315121456712](../assets/images/image-20250315121456712.png)
 
 无论是单分区还是让同一批因果依赖的消息分到一个分区都不能**完全**保证消息的顺序性。
 

@@ -158,7 +158,7 @@ mirrorOf的其它值的含义：
 
 activeProfile标签的值是profile的id
 
-在idea中看到的![image-20250701223056654](C:\Users\DELL\AppData\Roaming\Typora\typora-user-images\image-20250701223056654.png)
+在idea中看到的![image-20250701223056654](../assets/images/image-20250701223056654.png)
 
 这个就是profiles中定义的。
 
@@ -166,7 +166,7 @@ activeProfile标签的值是profile的id
 
 官方这样说的：https://maven.apache.org/guides/mini/guide-multiple-repositories.html
 
-![image-20250701223405424](C:\Users\DELL\AppData\Roaming\Typora\typora-user-images\image-20250701223405424.png)
+![image-20250701223405424](../assets/images/image-20250701223405424.png)
 
 几点规则：
 
