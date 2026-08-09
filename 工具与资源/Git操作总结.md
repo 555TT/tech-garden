@@ -19,10 +19,6 @@
 
 再强调一下，之前add了某个文件然后commit了，现在又修改了这个文件，**commit前还要再add一次！！！**你没有这个感知是因为大部分的ide比如idea、pycharm等都是执行的`git commit file1 file2 -m "提交这些文件"`，指定文件的`git commit`命令会自动执行git add然后commit。但这种方法只对“已修改文件”有效，新文件（untracked）不会被提交 。
 
-我认为，这也是为什么jetbrains家族的ide都会把文件分为“更改”和“未进行版本管理的文件”。
-
-<img src="../assets/images/missing/截屏2026-06-03 11.48.59.png" alt="截屏2026-06-03 11.48.59" style="zoom:50%;" />
-
 # 二、日常高频操作
 
 ## 初始化和克隆
