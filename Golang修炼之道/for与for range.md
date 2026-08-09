@@ -101,7 +101,7 @@ slice1 := []string{"a", "b", "c"}
 
 
 
-![image-20260327161255352](../assets/images/missing/image-20260327161255352.png)
+![image-20260327161255352](../assets/images/image-20260327161255352.png)
 
 # 遍历map
 
@@ -189,7 +189,7 @@ var m map[string]int  // nil map
 
 以上的案例也印证了官网中对于for range迭代map的解释
 
-![image-20260327160018715](../assets/images/missing/image-20260327160018715.png)
+![image-20260327160018715](../assets/images/image-20260327160018715.png)
 
 # 遍历chan
 
@@ -334,7 +334,7 @@ for i, v := range Enumerate([]string{"a", "b", "c"}) {
 
 先看看官网怎么解释的：
 
-![image-20260327163522246](../assets/images/missing/image-20260327163522246.png)
+![image-20260327163522246](../assets/images/image-20260327163522246.png)
 
 依然看不懂也没关系，也和我一样。。。
 
