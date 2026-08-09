@@ -1,6 +1,6 @@
 # 一、方案设计阶段
 
-1. 数据库表设计。最终产物：建表sql文件、表结构设计图（不要传统的严格意义上的ER图，要大概这种）<img src="C:\Users\DELL\AppData\Roaming\Typora\typora-user-images\image-20260702225531910.png" alt="image-20260702225531910" style="zoom: 25%;" />
+1. 数据库表设计。最终产物：建表sql文件、表结构设计图（不要传统的严格意义上的ER图，要大概这种）<img src="../assets/images/image-20260702225531910.png" alt="image-20260702225531910" style="zoom: 25%;" />
 
    并且加上表之间的1:1或1:N的关系，表是单表还是分表。
 

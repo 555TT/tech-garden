@@ -8,15 +8,15 @@
 
 配置GRADLE_HOME，值为你的gradle安装根目录。
 
-![image-20250523162544861](C:\Users\DELL\AppData\Roaming\Typora\typora-user-images\image-20250523162544861.png)
+![image-20250523162544861](../assets/images/image-20250523162544861.png)
 
 配置GRADLE_USER_HOME（类似于maven的本地仓库，但功能不完全一样）
 
-![image-20250523162637500](C:\Users\DELL\AppData\Roaming\Typora\typora-user-images\image-20250523162637500.png)
+![image-20250523162637500](../assets/images/image-20250523162637500.png)
 
 最后再在path里添加%GRADLE_HOME%\bin，这样在任何目录都能用gradle了。
 
-![image-20250523163815481](C:\Users\DELL\AppData\Roaming\Typora\typora-user-images\image-20250523163815481.png)
+![image-20250523163815481](../assets/images/image-20250523163815481.png)
 
 ## 3.镜像
 
@@ -51,12 +51,12 @@ cd ~
 
 打开项目时选中build.gradle打开
 
-![image-20250523164130449](C:\Users\DELL\AppData\Roaming\Typora\typora-user-images\image-20250523164130449.png)
+![image-20250523164130449](../assets/images/image-20250523164130449.png)
 
 gradle选择本地的gradle，选包装器还得下载，本地有，直接用本地就行了。
 
-![image-20250523164243517](C:\Users\DELL\AppData\Roaming\Typora\typora-user-images\image-20250523164243517.png)
+![image-20250523164243517](../assets/images/image-20250523164243517.png)
 
 然后和maven一样，刷新就行了。
 
-![image-20250523164341157](C:\Users\DELL\AppData\Roaming\Typora\typora-user-images\image-20250523164341157.png)
+![image-20250523164341157](../assets/images/image-20250523164341157.png)

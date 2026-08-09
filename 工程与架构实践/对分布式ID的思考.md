@@ -107,7 +107,7 @@ String orderId = DistributeID.generateWithSnowflake(业务码, 机器的woerId, 
 4. 机器标识(5bit):可以用来区分不同的机器。
 5. 序列号(12bit):可以生成4096个不同的序列号。
 
-![image-20250411173921380](C:\Users\DELL\AppData\Roaming\Typora\typora-user-images\image-20250411173921380.png)
+![image-20250411173921380](../assets/images/image-20250411173921380.png)
 
 当发生时钟回拨，时间跳到过去某个时间上，时间戳就和过去某个时间戳重复了，因为又是在一台机器上，所以数据中心和机器标识也一样，这时保证唯一只有靠序列号了。但当瞬时数据量非常大，就很容易导致雪花算法生成的id重复。
 
@@ -159,7 +159,7 @@ leaf支持两种模式：号段模式，和雪花算法模式
 
 数据库表设计如下：
 
-![image-20250411182341240](C:\Users\DELL\AppData\Roaming\Typora\typora-user-images\image-20250411182341240.png)
+![image-20250411182341240](../assets/images/image-20250411182341240.png)
 
 重要字段说明：biz_tag用来区分业务，max_id表示该biz_tag目前所被分配的ID号段的最大值，step表示每次分配的号段长度。原来获取ID每次都需要写数据库，现在只需要把step设置得足够大，比如1000。那么只有当1000个号被消耗完了之后才会去重新读写一次数据库。读写数据库的频率从1减小到了1/step。
 
@@ -167,7 +167,7 @@ leaf支持两种模式：号段模式，和雪花算法模式
 
 举例说明：
 
-![image-20250411182951599](C:\Users\DELL\AppData\Roaming\Typora\typora-user-images\image-20250411182951599.png)
+![image-20250411182951599](../assets/images/image-20250411182951599.png)
 
 用于生成用户分布式id的user_tag。用户服务A第一次获取一个号段：[1,1000]，更新max_id为1000，然后给自己的服务串行分配。分配完后又来获取一个新的号段，假如这时已经有另一个用户服务B获取了一次号段：[1001,2000]，更新max_id为2000，这时用户服务A再获取的号段应该是[20001,3000]，更新max_id为3000
 
@@ -185,4 +185,4 @@ Leaf-snowflake方案完全沿用snowflake方案的bit位设计，即是“1+41+1
 
 其次在每次获取雪花id时也进行了校验
 
-![image-20250411190625215](C:\Users\DELL\AppData\Roaming\Typora\typora-user-images\image-20250411190625215.png)
+![image-20250411190625215](../assets/images/image-20250411190625215.png)

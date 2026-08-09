@@ -15,9 +15,9 @@ Java的NIO一般说的是JDK1.4出的nio包下的api，N可以理解为非阻塞
 
 以read操作为例，一次read操作的大致过程：用户线程调用channel.read后，cpu会切换至内核态由操作系统来完成对数据的读取，读取又分为两个阶段：等待数据阶段和复制数据阶段（将数据从内核空间复制到用户空间）
 
-![image-20250503154148756](C:\Users\DELL\AppData\Roaming\Typora\typora-user-images\image-20250503154148756.png)
+![image-20250503154148756](../assets/images/image-20250503154148756.png)
 
-![image-20250503154226009](C:\Users\DELL\AppData\Roaming\Typora\typora-user-images\image-20250503154226009.png)
+![image-20250503154226009](../assets/images/image-20250503154226009.png)
 
 阻塞具体指的是当数据没有准备好，用户线程会一直阻塞在等待数据阶段。
 
@@ -64,7 +64,7 @@ accept会使线程阻塞，等待客户端连接。没法建立连接时，没�
 
 何为非阻塞
 
-![image-20250503154339859](C:\Users\DELL\AppData\Roaming\Typora\typora-user-images\image-20250503154339859.png)
+![image-20250503154339859](../assets/images/image-20250503154339859.png)
 
 非阻塞read一般在while(true)中调用，当数据没有准备好时，用户线程并不会阻塞住，而是直接返回。**复制数据也是会阻塞住的**。
 
@@ -162,7 +162,7 @@ api的具体其它细节：
 
 1. 当获得的selectionKey对应的事件没有处理时，像下面这样
 
-![image-20250425201933139](C:\Users\DELL\AppData\Roaming\Typora\typora-user-images\image-20250425201933139.png)
+![image-20250425201933139](../assets/images/image-20250425201933139.png)
 
 下次循环到selector.select()也不会阻塞，因为有一个还未处理的selectionKey。如果不想处理，也可以调用selectionKey的cannel方法，下次循环到selector.select()就会将该selectionKey判定为已处理过了。
 
@@ -328,13 +328,13 @@ pipeline.addLast(new ChatServerHandler());//这个handler继承入站handler
 
 这个顺序组织好handler后就像下面这样(这里注意，除了我们自己添加的handler，首尾还有自带的head和tail，下面真实的顺序应该是head->解码handler->编码handler->业务handler->tail,addLast方法是在tail的前面添加)
 
-![image-20250425164302806](C:\Users\DELL\AppData\Roaming\Typora\typora-user-images\image-20250425164302806.png)
+![image-20250425164302806](../assets/images/image-20250425164302806.png)
 
 客户端向服务端发数据，对服务端来说就是入站，先经过解码handler，而解码handler正好就是一个入站handler，于是channle上的二进制数据被解码为了字符串，然后经过编码handler，但编码handler是一个出站handler，所以不会执行该handler。
 
 出站
 
-![image-20250425165044670](C:\Users\DELL\AppData\Roaming\Typora\typora-user-images\image-20250425165044670.png)
+![image-20250425165044670](../assets/images/image-20250425165044670.png)
 
 服务端在业务handler中向客户端写数据时，对服务端来说就是出站，经过了编码handler，而编码handler正好是一个出站handler，于是字符串就会被编码为二进制数据。
 
@@ -349,7 +349,7 @@ pipeline.addLast(new 业务Handler());//这个handler继承入站handler
 
 
 
-![image-20250425165713510](C:\Users\DELL\AppData\Roaming\Typora\typora-user-images\image-20250425165713510.png)
+![image-20250425165713510](../assets/images/image-20250425165713510.png)
 
 客户端向服务端写数据时，对客户端来说是出站，业务处理handler里写数据，经过了出站的编码handler，将字符串编码为了二进制。
 
@@ -405,31 +405,31 @@ ByteBuffer 有以下重要属性
 
 ByteBuffer刚创建时，是这样
 
-![image-20250508211246719](C:\Users\DELL\AppData\Roaming\Typora\typora-user-images\image-20250508211246719.png)
+![image-20250508211246719](../assets/images/image-20250508211246719.png)
 
 limit表示写入限制，容量就是最多能写的大小
 
 写入了四个字节后，position就移动到了第四个位置
 
-![image-20250508211413206](C:\Users\DELL\AppData\Roaming\Typora\typora-user-images\image-20250508211413206.png)
+![image-20250508211413206](../assets/images/image-20250508211413206.png)
 
 当想读取内容时，要调用**flip()**方法，flip方法的作用是将limit=当前position，position=0。也就是切换到了读模式，可以根据position（要读取的位置）和limit（读取限制）读取数据了，就像下面这样
 
-![image-20250508211734185](C:\Users\DELL\AppData\Roaming\Typora\typora-user-images\image-20250508211734185.png)
+![image-20250508211734185](../assets/images/image-20250508211734185.png)
 
 读了四个字节后
 
-![image-20250508211848069](C:\Users\DELL\AppData\Roaming\Typora\typora-user-images\image-20250508211848069.png)
+![image-20250508211848069](../assets/images/image-20250508211848069.png)
 
 这时，如果再想写数据，需要调用**clear()**方法，clear的作用是将position=0，limit=capacity。像下面这样
 
-![image-20250508213530648](C:\Users\DELL\AppData\Roaming\Typora\typora-user-images\image-20250508213530648.png)
+![image-20250508213530648](../assets/images/image-20250508213530648.png)
 
 **此时，就能继续写数据了。如果不调用clear方法然后写数据，会因为position已经到了limit的限制，而写入失败，报错。那如果读取的时候不读取4个字节，只读2个字节，这时不调用clear然后写数据，就不会被limit限制了？是的，不会限制了，写入时也不会报错，但是这次写入覆盖了前面的写入！**
 
 compact 方法，是把未读完的部分向前压缩，然后切换至写模式，像下面这样
 
-![image-20250508213916899](C:\Users\DELL\AppData\Roaming\Typora\typora-user-images\image-20250508213916899.png)
+![image-20250508213916899](../assets/images/image-20250508213916899.png)
 
 向 buffer 写入数据
 
@@ -532,7 +532,7 @@ ByteBuf copiedBuffer = Unpooled.copiedBuffer(originalBuffer);
 
 ##### 组成
 
-![image-20250516151556761](C:\Users\DELL\AppData\Roaming\Typora\typora-user-images\image-20250516151556761.png)
+![image-20250516151556761](../assets/images/image-20250516151556761.png)
 
 Netty的ByteBuf用了两个指针（读指针readerIndex，写指针writerIndex）来确定读写位置，而nio包中的ByteBuffer只用了一个position，所以ByteBuf使用起来比ByteBuffer更方便，不用像ByteBuffer那样每次读之前flip，写之前clear。
 
@@ -589,6 +589,6 @@ pipeline.addLast(new FixedLengthFrameDecoder(1024));
 
 这是较为常⽤的解决⽅案。
 
-![image-20250424174024017](C:\Users\DELL\AppData\Roaming\Typora\typora-user-images\image-20250424174024017.png)
+![image-20250424174024017](../assets/images/image-20250424174024017.png)
 
 比如我们自定义一个MessageProtocol，指定消息长度和具体的消息内容。读取时，先读到消息长度，例如为12个字节，那么就向后读取12个字节作为本次消息内容。

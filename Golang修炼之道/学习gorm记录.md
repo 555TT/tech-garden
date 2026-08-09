@@ -14,3 +14,4 @@ gorm自己定义的error：gorm.io/gorm/errors.go
 
 github.com/go-sql-driver/mysql实现了database/sql/driver，gorm.io/driver/mysql使用了go-sql-driver/mysql
 
+msyql中的timestamp 最早有效瞬间是1970-01-01 00:00:01 UTC，而不是1970-01-01 00:00:00 UTC

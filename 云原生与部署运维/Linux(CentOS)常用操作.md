@@ -200,7 +200,7 @@ sudo pip3 install docker-compose
 vim /etc/sysconfig/network-scripts/ifcfg-ens33
 ```
 
-![image-20250303164133417](C:\Users\DELL\AppData\Roaming\Typora\typora-user-images\image-20250303164133417.png)
+![image-20250303164133417](../assets/images/image-20250303164133417.png)
 
 ```shell
 IPADDR=192.168.200.130
@@ -210,9 +210,9 @@ DNS1=192.168.200.2
 
 2. 改vmware网络配置
 
-![image-20250303164310167](C:\Users\DELL\AppData\Roaming\Typora\typora-user-images\image-20250303164310167.png)
+![image-20250303164310167](../assets/images/image-20250303164310167.png)
 
-![image-20250303164349873](C:\Users\DELL\AppData\Roaming\Typora\typora-user-images\image-20250303164349873.png)
+![image-20250303164349873](../assets/images/image-20250303164349873.png)
 
 二、wget从github下载文件无法建立SSL连接？
 
