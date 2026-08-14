@@ -1,10 +1,10 @@
-for能遍历数组、切片、string、整数值
+for可以循环数组、切片、string、整数值
 
 for能遍历的for range都能遍历，另外，for range 还可以遍历map、chan、**func**
 
-for与for range遍历每种数据类型案例：
+# for与for range遍历每种数据类型示例
 
-# 遍历数组或切片
+## 遍历数组或切片
 
 ```go
 slice1 := []string{"a", "b", "c"}
@@ -29,19 +29,19 @@ slice1 := []string{"a", "b", "c"}
 2 c string
 ```
 
-# **遍历字符串**
+## **遍历字符串**
 
-* 遍历ASC字符串
+* 遍历ASCII字符串
 
 ```go
 	s := "golang"
 	fmt.Println(len(s))
-	// for range遍历ASC字符，v的类型是rune
+	// for range遍历ASCII字符，v的类型是rune
 	for i, v := range s {
 		fmt.Println(i, string(v), reflect.TypeOf(v))
 	}
 	fmt.Println("----")
-	// for遍历ASC字符
+	// for遍历ASCII字符
 	for i := 0; i < len(s); i++ {
 		fmt.Println(i, string(s[i]), reflect.TypeOf(s[i]))
 	}
@@ -66,17 +66,17 @@ slice1 := []string{"a", "b", "c"}
 5 g uint8
 ```
 
-* 遍历UTF8字符串
+* 遍历UTF-8字符串
 
 ```go
 	s := "你好"
 	fmt.Println(len(s))
-	// for range遍历UTF-8字符，v的类型是rune
+// for range遍历UTF-8字符，v的类型是rune(int32)
 	for i, v := range s {
 		fmt.Println(i, string(v), reflect.TypeOf(v))
 	}
 	fmt.Println("----")
-	// for遍历UTF-8字符
+// for遍历UTF-8字符，s[i]的类型是uint8
 	for i := 0; i < len(s); i++ {
 		fmt.Println(i, string(s[i]), reflect.TypeOf(s[i]))
 	}
@@ -97,13 +97,21 @@ slice1 := []string{"a", "b", "c"}
 5 ½ uint8
 ```
 
-可以普通for遍历字符串是一个字节一个字节遍历的，当字符串中包含UTF8字符时就会乱码，因为在UTF8中汉字占三个字节，int8存储不下。而for range是用rune(int32)来存每个字符的，i是每个字符的首地址索引，'你'占0、1、2三个字节，'好'占3、4、5三个字节。所以当要遍历的字符串中包含utf-8字符时不要用普通for。
-
-
+可以普通for遍历字符串是一个字节一个字节遍历的，而一个 UTF-8 编码的 `rune` 可能由多个字节组成，把其中一个字节单独转换成 `string`，所以会乱码。而for range是用rune(int32)来存每个字符的，i是 rune 起始处的字节下标，'你'占0、1、2三个字节，'好'占3、4、5三个字节。所以当要遍历的字符串中包含utf-8字符时且需要解码时不要用普通for，处理原始字节用普通for。
 
 ![image-20260327161255352](../assets/images/image-20260327161255352.png)
 
-# 遍历map
+扩展：使用for range遍历一些组合的emoji表情时，也可能会达不到用户视觉上的完整字符，例如
+
+![image-20260809171639395](../assets/images/image-20260809171639395.png)
+
+输出：
+
+![image-20260809171702669](../assets/images/image-20260809171702669.png)
+
+
+
+## 遍历map
 
 ```go
 	map1 := map[string]string{
@@ -120,9 +128,9 @@ slice1 := []string{"a", "b", "c"}
 	}
 ```
 
-普通for没办法来遍历map，如果硬说普通for来遍历map，那就是key是一个有顺序的，用普通for来遍历key，然后根据key来取value。
+普通for没办法直接来遍历map，如果硬要使用普通for来遍历map，可以有一个 key 切片，通过for来遍历key切片，然后根据key来取value。
 
-* for range遍历map时需要注意的是for range并不保证每次遍历得到的顺序一致
+* for range遍历map时需要注意的是for range并不保证每次遍历得到的顺序一致，不同轮迭代可能相同，也可能不同。
 
 部分输出内容：
 
@@ -152,14 +160,14 @@ for k := range m {
 }
 ```
 
-输出结果：
+可能的输出结果：
 
 ```tex
 a
 c
 ```
 
-(这里也可能会打印出b，当b先遍历到的时候)
+(**这里也可能会打印出b，当b先遍历到的时候**)
 
 * 如果在迭代过程中创建了新的entry，则该条目可能在本次迭代中生成，也可能被跳过
 
@@ -172,8 +180,7 @@ for k := range m {
     }
 }
 // 可能输出: a        （"b" 被跳过）
-// 也可能输出: a b    （"b" 被遍历到）
-// 具体取决于 "b" 落在哪个桶，不确定
+// 也可能输出: a b   （"b" 被遍历到）
 ```
 
 * 如果map为nil，则迭代次数为0，不会panic
@@ -191,7 +198,7 @@ var m map[string]int  // nil map
 
 ![image-20260327160018715](../assets/images/image-20260327160018715.png)
 
-# 遍历chan
+## 遍历chan
 
 * 对于chan，迭代产生的值是通道关闭前通过该通道发送的连续值。
 
@@ -215,16 +222,20 @@ for v := range ch {
 * 如果chan为 nil ，则范围表达式将永远阻塞
 
 ```go
+func main() {
+
 var ch chan int // ch == nil，零值
 
-for range ch {  // 立刻阻塞，永不执行，也永不退出
+for range ch {  // 从 nil chan 接收会永久阻塞
     
+	}
 }
+
 ```
 
-最终触发 `fatal error: all goroutines are asleep - deadlock!`
+如果main中没有其它 goroutine 可以继续运行了，最终会触发 `fatal error: all goroutines are asleep - deadlock!`
 
-# 遍历func
+## 遍历func
 
 这是 Go 1.22 引入的实验性特性，Go 1.23 正式稳定。
 
@@ -344,7 +355,7 @@ for i, v := range Enumerate([]string{"a", "b", "c"}) {
 func main() {
 	for i, v := range Enumerate([]string{"a", "b", "c"}) {
 		fmt.Printf("%d: %s\n", i, v) // 0:a  1:b  2:c
-		fmt.Println("这就是yeild的函数体")
+		fmt.Println("这就是yield的函数体")
 		if i == 1 {
 			return
 		}
@@ -366,7 +377,7 @@ func Enumerate[T any](s []T) func(yield func(int, T) bool) {
 
 ```go
 fmt.Printf("%d: %s\n", i, v) // 0:a  1:b  2:c
-		fmt.Println("这就是yeild的函数体")
+		fmt.Println("这就是yield的函数体")
 		if i == 1 {
 			return
 }
@@ -380,14 +391,14 @@ fmt.Printf("%d: %s\n", i, v) // 0:a  1:b  2:c
 
 ```tex
 0:a
-这就是yeild的函数体
+这就是yield的函数体
 ```
 
 if条件不成立，没有return，yield返回true，取反false。第二轮：i=1,v="b"，执行yield(i,v)，打印
 
 ```tex
 1:b
-这就是yeild的函数体
+这就是yield的函数体
 ```
 
 if条件成立，return，此时虽然main中return了，但代码还没执行完，yield返回false，取反true，打印
