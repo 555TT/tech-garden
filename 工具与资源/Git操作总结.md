@@ -49,6 +49,12 @@ git clone --branch develop <repository-url>
 
 ①创建一个远程仓库
 
+```bash
+git init
+```
+
+添加.gitignore文件
+
 ②检查远程仓库信息，本地仓库是否和一个远程仓库关联
 
 ```bash
@@ -65,6 +71,12 @@ git remote add origin <远程仓库地址>
 
 （origin：远程仓库的默认名称）
 
+更改远程仓库地址，例如要从https方式改为ssh
+
+```bash
+git remote set-url origin git@github.com:555TT/hao-nft.git
+```
+
 ④如果本地仓库也是一个新仓库，没有任何commit，那么**此时本地仓库也没有分支**，没有分支就无法pull/push代码，可以将本地全部文件先创建一个commit，就会默认出现主分支
 
 ```bash
@@ -74,7 +86,15 @@ git commit -m	# 将所有改动创建一个commit
 
 创建了一个commit，此时就会有一个主分支main/master。
 
-⑤如果远程仓库已经有了commit，比如创建仓库时自动创建readme文件，可以先拉取使本地是最新的
+⑤如果远程仓库是一个空仓库，那么远程仓库没有一个commit，也没有分支，将本地commit推送到远程仓库
+
+```bash
+git push -u origin main
+```
+
+-u 是 --set-upstream 的简写，表示远程仓库的默认分支是main。这样远程仓库就生成一个main分支了且和本地仓库的main关联
+
+⑥如果远程仓库已经有了commit，比如创建仓库时自动创建readme文件，可以先拉取使本地是最新的
 
 但是此时直接使用git pull拉取，git不知道要拉取远程仓库的哪个分支，要先设置本地分支关联的远程仓库的哪个分支
 
