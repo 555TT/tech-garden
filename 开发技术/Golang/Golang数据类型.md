@@ -1,6 +1,4 @@
-# Golang数据类型
-
-## 占用的内存大小
+# 占用的内存大小
 
 对于golang的内置数据类型，占用内存大小如下：
 
@@ -42,9 +40,9 @@ fmt.Println(unsafe.Sizeof(str)) // string本质是一个struct{Data *byte Len in
 fmt.Println(len(str))	// 9，UniCode编码中，一个汉字占用三个字节
 ```
 
-## 数据类型分类
+# 数据类型分类
 
-### 按基本类型/复合类型来分
+## 按基本类型/复合类型来分
 
 1. 基本类型
 
@@ -59,7 +57,7 @@ fmt.Println(len(str))	// 9，UniCode编码中，一个汉字占用三个字节
 
 数组[3]int、切片[]int、map、指针、接口 interface、函数 func()、chan、结构体 struct
 
-### 按值语义/引用语义来分
+## 按值语义/引用语义来分
 
 1. 值语义（参数传递时整体拷贝）
 
@@ -71,11 +69,11 @@ fmt.Println(len(str))	// 9，UniCode编码中，一个汉字占用三个字节
 
 golang中，参数传递全是值传递
 
-### 按照是否可比较分类
+## 按照是否可比较分类
 
 在 Go 中，是否可比较的意思是否可以用`==`来运算。
 
-1. 可比较：基本类型、指针、数组（元素可比较的情况下）、结构体（必须全部元素可比较）、chan、接口
+1. 可比较：基本类型、指针、数组（元素可比较的情况下）、结构体（必须全部元素可比较且是两个同类型的结构体实例）、chan、接口
 
 基本类型、数组、结构体在用`==`运算时比较的是具体的值是否相等。
 
@@ -119,4 +117,138 @@ fmt.Println(a == b)	// true
 
 Go 规范明确规定：map 的 key 类型必须支持 `==` 比较操作。可以这么说，**可比较的数据类型一定可以作为 map 的 key，可以作为 map 的 key 的数据类型一定可比较**。
 
-## 数据类型底层剖析
+# 数据类型
+
+## 切片
+
+切片的零值是 nil。nil 切片的长度和容量都是 0，`append` 可以从 nil 切片开始；但按下标访问前，长度必须足够。`make([]T, len, cap)` 中，`len` 是切片长度，`cap` 是容量，且长度不能大于容量：
+
+```go
+package main
+
+import "fmt"
+
+func main() {
+	var s []int
+	fmt.Println(s == nil, len(s), cap(s))
+	s = append(s, 7)
+
+	t := make([]int, 2, 4)
+	t[0], t[1] = 10, 20
+	fmt.Println(t, len(t), cap(t))
+}
+```
+
+输出：`true 0 0`，然后是 `[10 20] 2 4`。省略容量时，容量等于长度；长度为 0、容量大于 0 的切片需要先 `append`，才能按下标访问元素：
+
+```go
+package main
+
+import "fmt"
+
+func main() {
+	a := make([]int, 3)
+	b := make([]int, 0, 3)
+	b = append(b, 1, 2)
+	fmt.Println(len(a), cap(a), len(b), cap(b))
+}
+```
+
+输出：`3 3 2 3`。复制切片只会复制切片描述信息，底层数组仍可能共享。`append` 超出容量后会使用足够大的底层存储，但具体扩容策略不是语言规范保证的：
+
+```go
+package main
+
+import "fmt"
+
+func main() {
+	a := make([]int, 2, 4)
+	a[0], a[1] = 1, 2
+	b := a
+	b[0] = 9
+	fmt.Println(a[0])
+
+	b = append(b, 3, 4, 5)
+	b[0] = 7
+	fmt.Println(a[0], b[0])
+}
+```
+
+输出：`9`，然后是 `9 7`。
+
+## map
+
+读取 nil map 中不存在的键会得到元素零值；向 nil map 写入会 panic。用 `make` 初始化后才能正常写入：
+
+```go
+package main
+
+import "fmt"
+
+func main() {
+	var m map[string]int
+	fmt.Println(m["missing"])
+	m = make(map[string]int)
+	m["score"] = 10
+	delete(m, "score")
+	fmt.Println(m["score"])
+}
+```
+
+输出：`0`，然后是 `0`。`make(map[K]V, n)` 中的 `n` 是容量提示，不是元素个数或上限：
+
+```go
+package main
+
+import "fmt"
+
+func main() {
+	m := make(map[string]int, 100)
+	fmt.Println(len(m))
+	m["one"] = 1
+	fmt.Println(len(m))
+}
+```
+
+输出：`0`，然后是 `1`。
+
+## 通道
+
+nil 通道的发送和接收都会永久阻塞。`make(chan T)` 创建无缓冲通道；`make(chan T, n)` 创建容量为 `n` 的缓冲通道：
+
+```go
+package main
+
+import "fmt"
+
+func main() {
+	var nilCh chan int
+	fmt.Println(nilCh == nil, cap(nilCh))
+
+	ch := make(chan int, 1)
+	ch <- 42
+	fmt.Println(<-ch)
+	close(ch)
+}
+```
+
+输出：`true 0`，然后是 `42`。无缓冲通道的发送和接收需要同步；缓冲通道在未满时可以发送，在有值时可以接收。通道关闭后仍可读出缓冲值；缓冲区读空后，接收会得到元素零值和 `false`：
+
+```go
+package main
+
+import "fmt"
+
+func main() {
+	ch := make(chan string, 1)
+	ch <- "ready"
+	close(ch)
+
+	value, ok := <-ch
+	fmt.Println(value, ok)
+	value, ok = <-ch
+	fmt.Printf("%q %t\n", value, ok)
+}
+```
+
+输出：`ready true`，然后是 `"" false`。
