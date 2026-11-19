@@ -104,7 +104,22 @@
   }
 
   function markdownInline(text, resolveSource) {
-    const cleanText = String(text).replace(/<\/?font[^>]*>/gi, '').replace(/<br\s*\/?>(?=.)/gi, '\n');
+    const rawImages = [];
+    const cleanText = String(text)
+      .replace(/!\[点击并拖拽以移动\]\(data:image\/gif;base64,[^)]+\)/g, '')
+      .replace(/<img\b([^>]*)>/gi, (_, attributes) => {
+        const attribute = (name) => {
+          const match = attributes.match(new RegExp(`(?:^|\\s)${name}\\s*=\\s*(?:"([^"]*)"|'([^']*)'|([^\\s>]+))`, 'i'));
+          return match ? match.slice(1).find((value) => value !== undefined) || '' : '';
+        };
+        const source = attribute('src');
+        if (!source) return '';
+        const zoom = attribute('style').match(/(?:^|;)\s*zoom\s*:\s*(\d+(?:\.\d+)?)%\s*(?:;|$)/i)?.[1];
+        rawImages.push({ source, alt: attribute('alt'), zoom: zoom && Number(zoom) >= 10 && Number(zoom) <= 100 ? zoom : '' });
+        return `\u0000raw-image-${rawImages.length - 1}\u0000`;
+      })
+      .replace(/<\/?font[^>]*>/gi, '')
+      .replace(/<br\s*\/?>(?=.)/gi, '\n');
     let value = escapeHtml(cleanText);
     value = value.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, (_, alt, src) => `<img src="${resolveSource ? resolveSource(src) : src}" alt="${alt}" loading="lazy" />`);
     value = value.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noreferrer">$1</a>');
@@ -113,6 +128,13 @@
     value = value.replace(/__([^_]+)__/g, '<strong>$1</strong>');
     value = value.replace(/\*([^*]+)\*/g, '<em>$1</em>');
     value = value.replace(/_([^_]+)_/g, '<em>$1</em>');
+    value = value.replace(/\u0000raw-image-(\d+)\u0000/g, (_, index) => {
+      const image = rawImages[Number(index)];
+      const source = escapeHtml(resolveSource ? resolveSource(image.source) : image.source);
+      const alt = escapeHtml(image.alt);
+      const zoom = image.zoom ? ` style="zoom:${image.zoom}%"` : '';
+      return `<img src="${source}" alt="${alt}" loading="lazy"${zoom} />`;
+    });
     return value;
   }
 
@@ -200,7 +222,10 @@
         continue;
       }
       const imageOnly = line.match(/^!\[([^\]]*)\]\(([^)]+)\)$/);
-      if (imageOnly) { flushParagraph(); flushList(); html.push(`<img src="${resolveSource(imageOnly[2])}" alt="${escapeHtml(imageOnly[1])}" loading="lazy" />`); continue; }
+      if (imageOnly) {
+        if (imageOnly[1] === '点击并拖拽以移动' && imageOnly[2].startsWith('data:image/gif;base64,')) continue;
+        flushParagraph(); flushList(); html.push(`<img src="${resolveSource(imageOnly[2])}" alt="${escapeHtml(imageOnly[1])}" loading="lazy" />`); continue;
+      }
       const bullet = line.match(/^\s*[-+*]\s+(.+)$/);
       const ordered = line.match(/^\s*\d+\.\s+(.+)$/);
       if (bullet || ordered) {
