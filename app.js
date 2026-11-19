@@ -58,8 +58,11 @@
     const visiblePosts = selectedPosts();
     app.innerHTML = `<section class="hero" id="home">
       <div class="hero-intro">
-        <div class="hero-label"><span class="hero-index">01</span><span>技术手记 / ENGINEERING LOG</span></div>
-        <h1>后端与全栈工程师的<br /><em>技术手记</em></h1>
+        <div class="hero-identity">
+          <img class="author-avatar" src="assets/images/qi-shuihao.jpg" alt="" width="72" height="72" />
+          <div class="hero-label"><span class="hero-index">01</span><span>柒水浩 / ENGINEERING LOG</span></div>
+        </div>
+        <h1>柒水浩的<br /><em>技术手记</em></h1>
         <p class="hero-copy">记录 Go、工程实践、AI 工具与职业成长。每篇文章都来自真实项目中的问题、判断和复盘。</p>
         <div class="hero-actions"><a class="hero-link" href="#notes">浏览文章 <span>→</span></a><span class="hero-note">Markdown source · Git tracked</span></div>
       </div>
@@ -235,7 +238,7 @@
         <header class="article-head"><p class="eyebrow">${escapeHtml(post.category)}</p><h1>${escapeHtml(post.title)}</h1><p class="article-lede">${escapeHtml(post.excerpt)}</p></header>
         <div class="article-layout"><div class="article-body">${rendered.html}</div><aside class="article-toc"><p class="toc-title">文章目录 / INDEX</p><nav class="toc-list">${rendered.headings.filter((heading) => heading.level <= 3).map((heading) => `<a href="#${heading.id}">${escapeHtml(heading.text)}</a>`).join('')}</nav></aside></div>
       </article>`;
-      document.title = `${post.title} · 技术手记`;
+      document.title = `${post.title} · 柒水浩的技术手记`;
       window.scrollTo(0, 0);
     } catch (error) {
       app.innerHTML = `<div class="error-box">这篇文章暂时无法加载。请确认 GitHub Pages 已经部署完整仓库，或稍后再试。</div>`;
@@ -247,7 +250,7 @@
     const hash = decodeURIComponent(location.hash.slice(1));
     const match = hash.match(/^post=(.+)$/);
     if (match) renderArticle(match[1]);
-    else { document.title = '技术手记 · Engineering Notes'; renderHome(); }
+    else { document.title = '柒水浩 · 技术手记'; renderHome(); }
   }
 
   window.addEventListener('hashchange', route);
