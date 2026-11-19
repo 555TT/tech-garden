@@ -186,7 +186,9 @@
       const response = await fetch(pathUrl(path));
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
       const markdown = await response.text();
-      const rendered = renderMarkdown(markdown, path);
+      const rendered = markdown.trim()
+        ? renderMarkdown(markdown, path)
+        : { html: '<p class="article-empty">这篇文章还没有正文内容，后续会继续补充。</p>', headings: [] };
       const wordCount = markdown.replace(/\s/g, '').length;
       app.innerHTML = `<article class="article-page">
         <div class="article-toolbar"><a class="back-link" href="#home">← 返回文章列表</a><div class="article-meta"><span>${escapeHtml(post.category)}</span><span>·</span><span>${wordCount.toLocaleString()} 字符</span></div></div>

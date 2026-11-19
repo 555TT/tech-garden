@@ -332,9 +332,9 @@ git rebase
 
 起初git log：
 
-![img](https://i-blog.csdnimg.cn/direct/28cce0fcf169415289392867052bdb91.png)![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)编辑
+![img](../assets/images/git-notes/01.png)
 
-也就是![img](https://i-blog.csdnimg.cn/direct/d590e47d2b89412d8387bcd2fcab5285.png)![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)
+也就是![img](../assets/images/git-notes/02.png)
 
 起初只有main这一个分支。在c1这个提交之后，新建了一个feature分支，然后在main又新增了两个commit：c2、c3，在feature上新增了两个commit：c4、c5。
 
@@ -344,9 +344,9 @@ git rebase
 
 执行git rebase feature的具体过程：站在main上，先把最近公共祖先c1以后的commit也就是c2、c3删除，生成新的c2'、c3'，然后接到c5的后面。也就变成了下面这样：
 
-![img](https://i-blog.csdnimg.cn/direct/a2d5373c238146f0a27f2b225c045a70.png)![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)编辑
+![img](../assets/images/git-notes/03.png)
 
-![img](https://i-blog.csdnimg.cn/direct/f0d60f37a62945c7863545145a18a5aa.png)![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)
+![img](../assets/images/git-notes/04.png)
 
 需要强调的是，c2和c3是新的c2和c3，虽然提交内容和原来的一样，但是commit hash值是不同的。 
 
@@ -449,7 +449,7 @@ git config --global --unset http.proxy
 
    效果就会像这样：
 
-   ![img](https://i-blog.csdnimg.cn/direct/bb926a40e542434eaf60a60fc07a6f56.png)![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)编辑
+   ![img](../assets/images/git-notes/05.png)
 
    解释：红色的origin/main是远程仓库的main分支所处于的版本（此处是1e32b7f），红色的origin/feature是远程仓库的feature分支所处于的版本（此处是43d0a7d），绿色的main是本地仓库的main分支所处于的版本（此处是1e32b7f)，绿色的feature是本地仓库的feature所处于版本(43d0a7d)。蓝色的HEAD是本地仓库目前处于的分支（也就是说当前已经git checkout到了feature分支上了），红色的origin/HEAD是远程仓库目前处于的分支(此处是main分支。没有做过什么配置，默认一直在main分支）。分析这个打印结果可以看出本地仓库和远程仓库是一致的，而feature比main超前了3了commit，落后main一个commit。
 
@@ -495,6 +495,6 @@ ssh-keygen -t rsa -b 4096 -C "你的邮箱"
 
 3.idea、pycharm等JetBrains的ide中，文件的颜色状态：
 
-![img](https://i-blog.csdnimg.cn/direct/f32844c7580e477d80030d1e1c626820.png)![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)编辑
+![img](../assets/images/git-notes/06.png)
 
 红色表示文件未加入版本控制，绿色表示已加入版本控制但尚未提交，蓝色表示已提交但有修改，白色（也就是正常颜色，无色）表示已提交且无修改

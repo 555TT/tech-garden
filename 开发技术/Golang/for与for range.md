@@ -99,15 +99,15 @@ slice1 := []string{"a", "b", "c"}
 
 可以普通for遍历字符串是一个字节一个字节遍历的，而一个 UTF-8 编码的 `rune` 可能由多个字节组成，把其中一个字节单独转换成 `string`，所以会乱码。而for range是用rune(int32)来存每个字符的，i是 rune 起始处的字节下标，'你'占0、1、2三个字节，'好'占3、4、5三个字节。所以当要遍历的字符串中包含utf-8字符时且需要解码时不要用普通for，处理原始字节用普通for。
 
-![image-20260327161255352](../assets/images/image-20260327161255352.png)
+![image-20260327161255352](../../assets/images/image-20260327161255352.png)
 
 扩展：使用for range遍历一些组合的emoji表情时，也可能会达不到用户视觉上的完整字符，例如
 
-![image-20260809171639395](../assets/images/image-20260809171639395.png)
+![image-20260809171639395](../../assets/images/image-20260809171639395.png)
 
 输出：
 
-![image-20260809171702669](../assets/images/image-20260809171702669.png)
+![image-20260809171702669](../../assets/images/image-20260809171702669.png)
 
 
 
@@ -196,7 +196,7 @@ var m map[string]int  // nil map
 
 以上的案例也印证了官网中对于for range迭代map的解释
 
-![image-20260327160018715](../assets/images/image-20260327160018715.png)
+![image-20260327160018715](../../assets/images/image-20260327160018715.png)
 
 ## 遍历chan
 
@@ -345,7 +345,7 @@ for i, v := range Enumerate([]string{"a", "b", "c"}) {
 
 先看看官网怎么解释的：
 
-![image-20260327163522246](../assets/images/image-20260327163522246.png)
+![image-20260327163522246](../../assets/images/image-20260327163522246.png)
 
 依然看不懂也没关系，也和我一样。。。
 
