@@ -579,7 +579,7 @@ consumer实例的五种状态：
 
 状态机：
 
-![img](https://ask.qcloudimg.com/http-save/6552462/k6a6jiwzzt.jpeg)
+![img](../assets/images/kafka-notes/01.jpg)
 
 状态流转说明：
 
@@ -607,21 +607,21 @@ Kafka定期自动删除过期位移的条件就是，组要处于Empty状态。 
 
 -  新成员入组。 新成员入组是指组处于Stable状态后，有新成员加入。 如果是全新启动一个消费者组，Kafka是有一些自己的小优化的，流程上会有些许的不同。 我们这里讨论的是，组稳定了之后有新成员加入的情形。 当协调者收到新的JoinGroup请求后， 它会通过心跳请求响应的方式通知组内现有的所有成员， 强制它们开启新一轮的重平衡。 具体的过程和之前的客户端重平衡流程是一样的。 现在，我用一张时序图来说明协调者一端是如何处理新成员入组的。
 
-![img](https://ask.qcloudimg.com/http-save/6552462/aqrlbpuybr.jpeg)
+![img](../assets/images/kafka-notes/02.jpg)
 
 -  组成员主动离组。 何谓主动离组？就是指消费者实例所在线程或进程调用close()方法主动通知协调者它要退出。 这个场景就涉及到了第三类请求：LeaveGroup请求。 协调者收到LeaveGroup请求后，依然会以心跳响应的方式通知其他成员
 
-![img](https://ask.qcloudimg.com/http-save/6552462/g6ni079dve.jpeg)
+![img](../assets/images/kafka-notes/03.jpg)
 
 -  组成员崩溃离组。 崩溃离组是指消费者实例出现严重故障，突然宕机导致的离组。 它和主动离组是有区别的， 因为后者是主动发起的离组，协调者能马上感知并处理。 但崩溃离组是被动的，协调者通常需要等待一段时间才能感知到， 这段时间一般是由消费者端参数session.timeout.ms控制的。 也就是说，Kafka一般不会超过session.timeout.ms就能感知到这个崩溃。 当然，后面处理崩溃离组的流程与之前是一样的，我们来看看下面这张图。
 
-![img](https://ask.qcloudimg.com/http-save/6552462/bg2b0rjo1c.jpeg)
+![img](../assets/images/kafka-notes/04.jpg)
 
  **重平衡时协调者对组内成员提交位移的处理**
 
  正常情况下，每个组内成员都会定期汇报位移给协调者。 当重平衡开启时，协调者会给予成员一段缓冲时间， 要求每个成员必须在这段时间内快速地上报自己的位移信息， 然后再开启正常的JoinGroup/SyncGroup请求发送。 还是老办法，我们使用一张图来说明。
 
-![img](https://ask.qcloudimg.com/http-save/6552462/epev617xq9.jpeg)
+![img](../assets/images/kafka-notes/05.jpg)
 
 # 扩展
 

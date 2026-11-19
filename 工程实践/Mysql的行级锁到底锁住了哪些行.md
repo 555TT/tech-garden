@@ -6,37 +6,37 @@
 
 <font style="color:rgb(64, 64, 64);">一个course表,cno为主键。预先插入一些数据</font>
 
-![](https://cdn.nlark.com/yuque/0/2025/png/39049391/1741421927681-029cbe2e-ebf1-49bf-8802-83d656f2101e.png)
+![](../assets/images/mysql-lock/01.png)
 
 开启两个会话，隔离级别都设置为RR
 
-![](https://cdn.nlark.com/yuque/0/2025/png/39049391/1741422097198-242de78d-6f7d-4308-ad18-d962be5256ae.png)
+![](../assets/images/mysql-lock/02.png)
 
 接着会话1用加了写锁的select锁住了>=4002的索引记录
 
-![](https://cdn.nlark.com/yuque/0/2025/png/39049391/1741422356885-4018c12d-bee0-4333-a595-c26326c4dbd4.png)
+![](../assets/images/mysql-lock/03.png)
 
 会话2尝试插入4003一行，被阻塞
 
-![](https://cdn.nlark.com/yuque/0/2025/png/39049391/1741422443132-8f9b1bf4-091d-4bbc-9e88-350173d20703.png)
+![](../assets/images/mysql-lock/04.png)
 
 说明会话1对4003这一间隙也加了锁。
 
 接着将隔离级别都设为RC
 
-![](https://cdn.nlark.com/yuque/0/2025/png/39049391/1741422790687-e7bcd6f1-d1e0-4efd-8649-3894419a22ae.png)
+![](../assets/images/mysql-lock/05.png)
 
 会话1锁住>=4002的行记录
 
-![](https://cdn.nlark.com/yuque/0/2025/png/39049391/1741422928418-8dce349f-cb1f-4fa4-9d67-d457bbf6a6ce.png)
+![](../assets/images/mysql-lock/06.png)
 
 会话2插入4003，插入成功
 
-![](https://cdn.nlark.com/yuque/0/2025/png/39049391/1741422967787-affc0baa-5d28-456b-9ae7-ca4a8b80ebbd.png)
+![](../assets/images/mysql-lock/07.png)
 
 会话2commit后，会话1再查询>=4002的记录
 
-![](https://cdn.nlark.com/yuque/0/2025/png/39049391/1741423045043-1b72406d-5396-4eb0-aa80-112fa82a1955.png)
+![](../assets/images/mysql-lock/08.png)
 
 <font style="color:rgb(64, 64, 64);">多出来了一行记录，也就是出现了幻读。从这也能看出RR的间隙锁解决了部分场景下的幻读问题。幻读问题可见另一篇博客：</font>
 
@@ -49,7 +49,7 @@
 
 <font style="color:rgb(51, 51, 51);">因为间隙锁在可重复读隔离级别下才有效，所以本篇文章接下来的描述，若没有特殊说明，默认是可重复读隔离级别。</font>
 
-![](https://cdn.nlark.com/yuque/0/2025/png/39049391/1741426443580-44646d35-9555-41d7-b6a9-93d8252b4daf.png)
+![](../assets/images/mysql-lock/09.png)
 
 ### 具体场景的加锁规则
 
