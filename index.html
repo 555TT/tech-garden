@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="后端与全栈工程师的技术手记，记录 Go、工程实践、AI 工具与职业成长。" />
+    <meta name="theme-color" content="#f5f7fb" />
+    <title>技术手记 · Engineering Notes</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="site-shell">
+      <header class="topbar">
+        <a class="brand" href="#home" aria-label="返回首页">
+          <span class="brand-mark">TG</span>
+          <span class="brand-copy">
+            <strong>技术手记</strong>
+            <small>TECHNICAL LOG</small>
+          </span>
+        </a>
+        <nav class="topnav" aria-label="主导航">
+          <a class="nav-link is-active" href="#home">首页</a>
+          <a class="nav-link" href="#about">关于</a>
+          <a class="github-link" href="https://github.com/555TT/tech-garden" target="_blank" rel="noreferrer">
+            <span>GitHub</span>
+            <span class="arrow">↗</span>
+          </a>
+        </nav>
+      </header>
+
+      <main id="app" aria-live="polite"></main>
+
+      <footer class="footer" id="about">
+        <span>© <span id="year"></span> 技术手记</span>
+        <span class="footer-dot">·</span>
+        <span>Built with Markdown &amp; GitHub Pages</span>
+      </footer>
+    </div>
+    <script src="posts.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>

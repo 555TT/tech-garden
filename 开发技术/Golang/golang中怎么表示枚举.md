@@ -15,7 +15,7 @@ const (
 	PUT    HttpMethod = 3
 	DELETE HttpMethod = 4
 )
-
+// 实现的Stringer接口
 func (h HttpMethod) String() string {
 	switch h {
 	case GET:
@@ -78,6 +78,7 @@ const (
 	DELETE
 )
 
+// 实现的Stringer接口
 func (h httpMethod) String() string {
 	switch h {
 	case GET:
