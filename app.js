@@ -139,13 +139,53 @@
     const flushCode = () => {
       if (code) { html.push(`<pre><code>${escapeHtml(code.lines.join('\n'))}</code></pre>`); code = null; }
     };
+    const tableCells = (line) => {
+      const source = line.trim().replace(/^\|/, '').replace(/\|$/, '');
+      const cells = [];
+      let cell = '';
+      let escaped = false;
+      for (const character of source) {
+        if (character === '|' && !escaped) { cells.push(cell.trim()); cell = ''; }
+        else if (character === '\\' && !escaped) escaped = true;
+        else { cell += character; escaped = false; }
+      }
+      cells.push(cell.trim());
+      return cells;
+    };
+    const isTableDivider = (line) => {
+      const cells = tableCells(line);
+      return line.includes('|') && cells.length > 0 && cells.every((cell) => /^:?-{3,}:?$/.test(cell));
+    };
+    const renderTable = (headerLine, dividerLine, rows) => {
+      const headers = tableCells(headerLine);
+      const alignments = tableCells(dividerLine).map((cell) => cell.startsWith(':') && cell.endsWith(':') ? 'center' : cell.endsWith(':') ? 'right' : cell.startsWith(':') ? 'left' : '');
+      const renderCells = (cells, tag) => `<tr>${headers.map((_, index) => {
+        const alignment = alignments[index];
+        const style = alignment ? ` style="text-align:${alignment}"` : '';
+        return `<${tag}${style}>${inline(cells[index] || '')}</${tag}>`;
+      }).join('')}</tr>`;
+      html.push(`<div class="table-wrap"><table><thead>${renderCells(headers, 'th')}</thead><tbody>${rows.map((row) => renderCells(tableCells(row), 'td')).join('')}</tbody></table></div>`);
+    };
 
-    lines.forEach((line) => {
+    for (let index = 0; index < lines.length; index += 1) {
+      const line = lines[index];
       if (code) {
         if (line.trim().startsWith('```')) flushCode(); else code.lines.push(line);
-        return;
+        continue;
       }
-      if (line.trim().startsWith('```')) { flushParagraph(); flushList(); code = { lines: [] }; return; }
+      if (line.trim().startsWith('```')) { flushParagraph(); flushList(); code = { lines: [] }; continue; }
+      if (line.includes('|') && index + 1 < lines.length && isTableDivider(lines[index + 1])) {
+        flushParagraph(); flushList();
+        const rows = [];
+        index += 2;
+        while (index < lines.length && lines[index].includes('|') && lines[index].trim()) {
+          rows.push(lines[index]);
+          index += 1;
+        }
+        renderTable(line, lines[index - rows.length - 1], rows);
+        index -= 1;
+        continue;
+      }
       const heading = line.match(/^(#{1,4})\s+(.+)$/);
       if (heading) {
         flushParagraph(); flushList();
@@ -154,10 +194,10 @@
         const id = `${slugify(text)}-${headings.length}`;
         headings.push({ level, text, id });
         html.push(`<h${level} id="${id}">${inline(heading[2])}</h${level}>`);
-        return;
+        continue;
       }
       const imageOnly = line.match(/^!\[([^\]]*)\]\(([^)]+)\)$/);
-      if (imageOnly) { flushParagraph(); flushList(); html.push(`<img src="${resolveSource(imageOnly[2])}" alt="${escapeHtml(imageOnly[1])}" loading="lazy" />`); return; }
+      if (imageOnly) { flushParagraph(); flushList(); html.push(`<img src="${resolveSource(imageOnly[2])}" alt="${escapeHtml(imageOnly[1])}" loading="lazy" />`); continue; }
       const bullet = line.match(/^\s*[-+*]\s+(.+)$/);
       const ordered = line.match(/^\s*\d+\.\s+(.+)$/);
       if (bullet || ordered) {
@@ -166,12 +206,12 @@
         if (!list || list.type !== type) { flushList(); list = { type }; html.push(`<${type}>`); }
         list.items = (list.items || 0) + 1;
         html.push(`<li>${inline((bullet || ordered)[1])}</li>`);
-        return;
+        continue;
       }
-      if (!line.trim()) { flushParagraph(); flushList(); return; }
-      if (line.startsWith('>')) { flushParagraph(); flushList(); html.push(`<blockquote>${inline(line.replace(/^>\s?/, ''))}</blockquote>`); return; }
+      if (!line.trim()) { flushParagraph(); flushList(); continue; }
+      if (line.startsWith('>')) { flushParagraph(); flushList(); html.push(`<blockquote>${inline(line.replace(/^>\s?/, ''))}</blockquote>`); continue; }
       paragraph.push(line.trim());
-    });
+    }
     flushCode(); flushParagraph(); flushList();
     let output = html.join('');
     output = output.replace(/href="([^\"]+\.md)"/g, (_, href) => `href="${articleUrl(resolveSource(href))}"`);
